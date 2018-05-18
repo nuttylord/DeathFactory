@@ -28,7 +28,9 @@ private:
 			
 			void	SendWelcomePacket( ClientProxyPtr inClientProxy );
 			void	UpdateAllClients();
-			
+
+			// TL - adding state packets with different functions so we can control what is updated.
+			void	AddEnvironmentStateToPacket(OutputMemoryBitStream& inOutputStream);
 			void	AddWorldStateToPacket( OutputMemoryBitStream& inOutputStream );
 			void	AddScoreBoardStateToPacket( OutputMemoryBitStream& inOutputStream );
 

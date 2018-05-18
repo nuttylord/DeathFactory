@@ -167,6 +167,8 @@ void NetworkManagerServer::SendStatePacketToClient( ClientProxyPtr inClientProxy
 
 	InFlightPacket* ifp = inClientProxy->GetDeliveryNotificationManager().WriteState( statePacket );
 
+	AddWorldStateToPacket(statePacket);
+
 	WriteLastMoveTimestampIfDirty( statePacket, inClientProxy );
 
 	AddScoreBoardStateToPacket( statePacket );
@@ -198,12 +200,29 @@ void NetworkManagerServer::AddWorldStateToPacket( OutputMemoryBitStream& inOutpu
 
 	//now start writing objects- do we need to remember how many there are? we can check first...
 	inOutputStream.Write( gameObjects.size() );
-
+	
 	for( GameObjectPtr gameObject : gameObjects )
 	{
 		inOutputStream.Write( gameObject->GetNetworkId() );
 		inOutputStream.Write( gameObject->GetClassId() );
 		gameObject->Write( inOutputStream, 0xffffffff );
+	}
+}
+
+void NetworkManagerServer::AddEnvironmentStateToPacket(OutputMemoryBitStream& inOutputStream)
+{
+	const auto& gameObjects = World::sInstance->GetGameObjects();
+
+	EnvironmentManager::sInstance->Write(inOutputStream);
+
+
+	inOutputStream.Write(gameObjects.size());
+
+	for (GameObjectPtr gameObject : gameObjects)
+	{
+		inOutputStream.Write(gameObject->GetNetworkId());
+		inOutputStream.Write(gameObject->GetClassId());
+		gameObject->Write(inOutputStream, 0xffffffff);
 	}
 }
 
