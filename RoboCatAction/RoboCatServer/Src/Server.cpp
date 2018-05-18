@@ -16,6 +16,7 @@ Server::Server()
 	GameObjectRegistry::sInstance->RegisterCreationFunction( 'RCAT', RoboCatServer::StaticCreate );
 	GameObjectRegistry::sInstance->RegisterCreationFunction( 'MOUS', MouseServer::StaticCreate );
 	GameObjectRegistry::sInstance->RegisterCreationFunction( 'YARN', YarnServer::StaticCreate );
+	GameObjectRegistry::sInstance->RegisterCreationFunction( 'ENVT', EnviromentServer::StaticCreate);
 	
 	InitNetworkManager();
 	//SDL_Window
@@ -67,14 +68,39 @@ namespace
 
 }
 
+namespace
+{
+
+	void CreateEnviroment()
+	{
+		//Vector3 mouseMin(-5.f, -3.f, 0.f);
+		//Vector3 mouseMax(5.f, 3.f, 0.f);
+		GameObjectPtr go;
+
+		//make a mouse somewhere- where will these come from?
+		for (int i = -2; i < 3; ++i)
+		{
+			go = GameObjectRegistry::sInstance->CreateGameObject('ENVT');
+			//Vector3 mouseLocation = RoboMath::GetRandomVector(mouseMin, mouseMax);
+
+			go->SetLocation(Vector3(2,1,0));
+			go->SetScale(5);
+		}
+	}
+
+
+}
+
 
 void Server::SetupWorld()
 {
 	//spawn some random mice
-	CreateRandomMice( 10 );
+	//CreateRandomMice( 10 );
 	
 	//spawn more random mice!
 	CreateRandomMice( 10 );
+
+	CreateEnviroment();
 }
 
 void Server::DoFrame()
@@ -85,7 +111,7 @@ void Server::DoFrame()
 
 	NetworkManagerServer::sInstance->RespawnCats();
 
-	DoObjectCollision();
+	//DoObjectCollision();
 	//mQuadtree->CheckObjectCollision();
 
 	Engine::DoFrame();

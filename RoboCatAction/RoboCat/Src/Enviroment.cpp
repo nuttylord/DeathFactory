@@ -1,0 +1,91 @@
+#include <RoboCatPCH.h>
+
+
+unsigned int Enviroment::getCategory() const
+{
+	return mType;
+}
+
+uint32_t Enviroment::Write(OutputMemoryBitStream & inOutputStream, uint32_t inDirtyState) const
+{
+	uint32_t writtenState = 0;
+
+	//our pose is first so we 
+	if (inDirtyState & EERS_Pose)
+	{
+		inOutputStream.Write((bool)true);
+
+		Vector3 location = GetLocation();
+		inOutputStream.Write(location.mX);
+		inOutputStream.Write(location.mY);
+
+		inOutputStream.Write(GetRotation());
+
+		writtenState |= EERS_Pose;
+	}
+	else
+	{
+		inOutputStream.Write((bool)false);
+	}
+	/*
+	if (inDirtyState & EERS_Type)
+	{
+		inOutputStream.Write((bool)true);
+
+		
+
+		inOutputStream.Write(getType());
+
+		writtenState |= EERS_Type;
+	}
+	else
+	{
+		inOutputStream.Write((bool)false);
+	}
+	*/
+
+
+	return writtenState;
+
+}
+
+void Enviroment::Read(InputMemoryBitStream & inInputStream)
+{
+	bool stateBit;
+
+	inInputStream.Read(stateBit);
+	if (stateBit)
+	{
+		Vector3 location;
+		inInputStream.Read(location.mX);
+		inInputStream.Read(location.mY);
+		SetLocation(location);
+
+	}
+	/*
+	inInputStream.Read(stateBit);
+	if (stateBit)
+	{
+		Vector3 color;
+		inInputStream.Read(color);
+		SetColor(color);
+	}
+	*/
+}
+
+bool Enviroment::HandleCollisionWithPlayer(RoboCat * incat)
+{
+
+	//depending on the enviroment type we will handle collision differently.
+
+
+	return false;
+}
+
+Enviroment::Enviroment()
+{
+	//default 
+
+	SetCollisionRadius(0.25f);
+}
+

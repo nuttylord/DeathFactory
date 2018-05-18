@@ -76,6 +76,10 @@ private:
 inline	GameObjectPtr NetworkManager::GetGameObject( int inNetworkId ) const
 { 
 	auto gameObjectIt = mNetworkIdToGameObjectMap.find( inNetworkId );
+	if (inNetworkId == 'ENVT')
+	{
+		LOG("wow", 0);
+	}
 	if( gameObjectIt != mNetworkIdToGameObjectMap.end() )
 	{
 		return gameObjectIt->second;

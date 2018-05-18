@@ -14,6 +14,7 @@
 #include <RoboCatClient.h>
 #include <MouseClient.h>
 #include <YarnClient.h>
+#include <EnviromentClient.h>
 
 #include <HUD.h>
 

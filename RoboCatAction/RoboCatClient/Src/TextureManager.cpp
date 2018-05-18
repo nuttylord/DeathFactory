@@ -13,10 +13,11 @@ TextureManager::TextureManager()
 	CacheTexture( "cat", "../Assets/cat.png" );
 	CacheTexture( "mouse", "../Assets/mouse.png" );
 	CacheTexture( "yarn", "../Assets/yarn.png" );
-	CacheTexture("BG", "../Assets/GroundInverted.png");
-	
+	//CacheTexture("BG", "../Assets/GroundInverted.png");
+	CacheTexture("block", "../Assets/block.png");
 	
 }
+	
 
 TexturePtr	TextureManager::GetTexture( const string& inTextureName )
 {
