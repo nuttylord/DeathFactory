@@ -80,16 +80,13 @@ StyleCopReport.xml
 *.log
 *.vspscc
 *.vssscc
-*.builds
+*.builds    
 *.pidb
 *.svclog
 *.scc
 *.vcproj
 *.vcproj.filters
 *.vcproj.user
-*.vcxproj.user
-*.vcxproj.filters
-*.vcxproj
 *.obj
 *.db
 *.pdb
@@ -100,7 +97,6 @@ StyleCopReport.xml
 *.xcscheme
 *.plist
 *.dylib
-*.sln
 
 # other files 
 *.dll
