@@ -23,12 +23,6 @@ public:
 protected:
 	EnviromentClient();
 	EnviromentClient(Type inType);
-
 private:
-
 	SpriteComponentPtr mSpriteComponent;
-
-
-
-
 };

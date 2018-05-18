@@ -167,7 +167,7 @@ void NetworkManagerServer::SendStatePacketToClient( ClientProxyPtr inClientProxy
 
 	InFlightPacket* ifp = inClientProxy->GetDeliveryNotificationManager().WriteState( statePacket );
 
-	AddWorldStateToPacket(statePacket);
+	//AddWorldStateToPacket(statePacket);
 
 	WriteLastMoveTimestampIfDirty( statePacket, inClientProxy );
 
@@ -213,7 +213,14 @@ void NetworkManagerServer::AddEnvironmentStateToPacket(OutputMemoryBitStream& in
 {
 	const auto& gameObjects = World::sInstance->GetGameObjects();
 
-	EnvironmentManager::sInstance->Write(inOutputStream);
+	for (GameObjectPtr gameObject : gameObjects)
+	{
+		if (gameObject->GetClassId() == 'ENVT') 
+		{
+
+		}
+	}
+	//EnviromentServer::sInstance->Write(inOutputStream);
 
 
 	inOutputStream.Write(gameObjects.size());

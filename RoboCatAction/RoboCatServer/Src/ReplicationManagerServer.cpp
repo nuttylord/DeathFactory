@@ -86,7 +86,9 @@ uint32_t ReplicationManagerServer::WriteUpdateAction( OutputMemoryBitStream& inO
 	GameObjectPtr gameObject = NetworkManagerServer::sInstance->GetGameObject( inNetworkId );
 
 	//if we can't find the gameObject on the other side, we won't be able to read the written data ( since we won't know which class wrote it )
-	//so we need to know how many bytes to skip.
+	//so we need to know how many bytes to sk
+	
+	
 
 
 	//this means we need byte sand each new object needs to be byte aligned

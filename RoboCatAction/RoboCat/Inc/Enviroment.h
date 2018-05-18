@@ -25,6 +25,8 @@ public:
 
 	static GameObject* StaticCreate() { return new Enviroment(); }
 
+	virtual uint32_t GetAllStateMask()	const override { return EERS_AllState; }
+
 	//void addObject(GameObject*);
 public:
 
