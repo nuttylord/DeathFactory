@@ -60,7 +60,8 @@ void Enviroment::Read(InputMemoryBitStream & inInputStream)
 		Vector3 location;
 		float rotation;
 
-		//Read them in, so these need to be after the state bit in the stream
+
+		
 		inInputStream.Read(location.mX);
 		inInputStream.Read(location.mY);
 		SetLocation(location);
@@ -80,7 +81,7 @@ void Enviroment::Read(InputMemoryBitStream & inInputStream)
 	
 }
 
-bool Enviroment::HandleCollisionWithPlayer(RoboCat * incat)
+bool Enviroment::HandleCollisionWithCat(RoboCat* incat)
 {
 
 	//depending on the enviroment type we will handle collision differently.

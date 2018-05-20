@@ -4,23 +4,31 @@ enum { kClassId = inCode }; \
 virtual uint32_t GetClassId() const { return kClassId; } \
 static GameObject* CreateInstance() { return static_cast< GameObject* >( new inClass() ); } \
 
+
+
 class GameObject
 {
 public:
-	typedef std::pair<GameObject*, GameObject*> Pair; // TL - used for collision pairs in the QuadTree structure. 
+	//typedef std::pair<GameObject*, GameObject*> Pair; // TL - used for collision pairs in the QuadTree structure. 
 	//typedef std::pair<GameObjGameObject*> Ptr;
 public:
 
 	CLASS_IDENTIFICATION( 'GOBJ', GameObject )
 
 	GameObject();
-	virtual ~GameObject() {}
+	virtual ~GameObject() {} 
+
 
 	//virtual void setType(inputType);
 
 	//virtual Enviroment* GetAsEnviroment() {return nullptr; }
 
-	virtual	RoboCat*	GetAsCat()	{ return nullptr; }
+	virtual	RoboCat*	GetAsCat()							{ return nullptr; }
+	// New Functions for server
+	virtual const Vector3&	GetVelocity()			const	{ return Vector3(0,0,0); } 
+	virtual const bool		GetIsPunching()			const	{ return false; }
+	virtual const float		GetWallRestitution()	const	{ return 0; }
+	virtual const float		GetCatRestitution()		const	{ return 0; }
 
 	virtual uint32_t GetAllStateMask()	const { return 0; }
 
@@ -80,5 +88,6 @@ private:
 	int												mNetworkId;
 
 };
+
 
 typedef shared_ptr< GameObject >	GameObjectPtr;

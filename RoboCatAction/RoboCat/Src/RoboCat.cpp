@@ -116,8 +116,8 @@ void RoboCat::ProcessCollisions()
 	//right now just bounce off the sides..
 	ProcessCollisionsWithScreenWalls();
 
-	float sourceRadius = GetCollisionRadius();
-	Vector3 sourceLocation = GetLocation();
+	//float sourceRadius = GetCollisionRadius();
+	//Vector3 sourceLocation = GetLocation();
 	// TL - to use a quadtree, we use sets. 
 	//std::set<GameObject*> collisionSet;
 
@@ -135,66 +135,7 @@ void RoboCat::ProcessCollisions()
 	//	// TL - so the first aim is to make a set of all the collidable objects in the scene. 
 	//	//target.
 	//}
-	for( auto goIt = World::sInstance->GetGameObjects().begin(), end = World::sInstance->GetGameObjects().end(); goIt != end; ++goIt )
-	{
-		GameObject* target = goIt->get();
-		if( target != this && !target->DoesWantToDie() )
-		{
-			//simple collision test for spheres- are the radii summed less than the distance?
-			Vector3 targetLocation = target->GetLocation();
-			float targetRadius = target->GetCollisionRadius();
-
-			Vector3 delta = targetLocation - sourceLocation;
-			float distSq = delta.LengthSq2D();
-			float collisionDist = ( sourceRadius + targetRadius );
-			if( distSq < ( collisionDist * collisionDist ) )
-			{
-				//first, tell the other guy there was a collision with a cat, so it can do something...
-
-				if( target->HandleCollisionWithCat( this ) )
-				{
-					//okay, you hit something!
-					//so, project your location far enough that you're not colliding
-					Vector3 dirToTarget = delta;
-					dirToTarget.Normalize2D();
-					Vector3 acceptableDeltaFromSourceToTarget = dirToTarget * collisionDist;
-					//important note- we only move this cat. the other cat can take care of moving itself
-					SetLocation( targetLocation - acceptableDeltaFromSourceToTarget );
-
-					
-					Vector3 relVel = mVelocity;
-				
-					//if other object is a cat, it might have velocity, so there might be relative velocity...
-					RoboCat* targetCat = target->GetAsCat();
-					if( targetCat )
-					{
-						relVel -= targetCat->mVelocity;
-					}
-
-					//got vel with dir between objects to figure out if they're moving towards each other
-					//and if so, the magnitude of the impulse ( since they're both just balls )
-					float relVelDotDir = Dot2D( relVel, dirToTarget );
-
-					if (relVelDotDir > 0.f)
-					{
-						Vector3 impulse = relVelDotDir * dirToTarget;
-					
-						if( targetCat )
-						{
-							mVelocity -= impulse;
-							mVelocity *= mCatRestitution;
-						}
-						else
-						{
-							mVelocity -= impulse * 2.f;
-							mVelocity *= mWallRestitution;
-						}
-
-					}
-				}
-			}
-		}
-	}
+	//s
 
 }
 
