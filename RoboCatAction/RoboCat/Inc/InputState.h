@@ -15,6 +15,8 @@ public:
 	float GetDesiredVerticalDelta()		const { return mDesiredForwardAmount - mDesiredBackAmount; }
 	bool  IsShooting()					const { return mIsShooting; }
 
+	
+
 	bool Write( OutputMemoryBitStream& inOutputStream ) const;
 	bool Read( InputMemoryBitStream& inInputStream );
 

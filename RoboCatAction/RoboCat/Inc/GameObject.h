@@ -16,6 +16,10 @@ public:
 	GameObject();
 	virtual ~GameObject() {}
 
+	//virtual void setType(inputType);
+
+	//virtual Enviroment* GetAsEnviroment() {return nullptr; }
+
 	virtual	RoboCat*	GetAsCat()	{ return nullptr; }
 
 	virtual uint32_t GetAllStateMask()	const { return 0; }

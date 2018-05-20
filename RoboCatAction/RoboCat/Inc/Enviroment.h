@@ -18,14 +18,16 @@ public:
 	enum EEnviromentReplicationState
 	{
 		EERS_Pose = 1 << 0,
-		//EERS_Type = 1 << 1,
+		EERS_Type = 1 << 1,
 
-		EERS_AllState = EERS_Pose
+		EERS_AllState = EERS_Pose | EERS_Type
 	};
 
 	static GameObject* StaticCreate() { return new Enviroment(); }
 
 	virtual uint32_t GetAllStateMask()	const override { return EERS_AllState; }
+
+	
 
 	//void addObject(GameObject*);
 public:
@@ -46,6 +48,7 @@ public:
 	virtual bool HandleCollisionWithPlayer(RoboCat* incat);
 
 	Type getType() { return mType; }
+	void setType(Type input);
 
 protected:
 	Enviroment();
@@ -61,3 +64,5 @@ private:
 	bool					mPlayedFanBoostSound;
 
 };
+
+typedef shared_ptr< Enviroment >	EnviromentPtr;
