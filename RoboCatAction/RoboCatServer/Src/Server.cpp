@@ -7,6 +7,13 @@
 
 using std::vector;
 
+struct Score {
+	string playerID;
+	int playerScore;
+};
+
+vector<Score> scoreList; // will contain all of the high scores
+
 bool Server::StaticInit()
 {
 	sInstance.reset( new Server() );
@@ -39,6 +46,7 @@ Server::Server()
 int Server::Run()
 {
 	SetupWorld();
+	LoadHighScore();
 
 	return Engine::Run();
 }
@@ -80,23 +88,23 @@ namespace
 	{
 		//Vector3 mouseMin(-5.f, -3.f, 0.f);
 		//Vector3 mouseMax(5.f, 3.f, 0.f);
-		//GameObjectPtr go;
+		GameObjectPtr go;
 
 
-		//make a mouse somewhere- where will these come from?
-		for (float i = -6; i < 5; i+= 0.75f)
+		//pipeFloor
+		for (float i = 0; i < 10; i++)
 		{
 			//go = GameObjectRegistry::sInstance->CreateGameObject('ENVT');
 			//Vector3 mouseLocation = RoboMath::GetRandomVector(mouseMin, mouseMax);
 
-			EnviromentPtr go = std::static_pointer_cast< Enviroment >(GameObjectRegistry::sInstance->CreateGameObject('ENVT'));
-			go->SetLocation(Vector3(i, 2, 0));
-			go->setType(Enviroment::Type::GasPipe);
-			go->SetScale(1);
+			EnviromentPtr make = std::static_pointer_cast< Enviroment >(GameObjectRegistry::sInstance->CreateGameObject('ENVT'));
+			make->SetLocation(Vector3((i*0.6f) -6, 2, 0));
+			make->setType(Enviroment::Type::GasPipe);
+			make->SetScale(1);
 			
 			
 		}
-
+		/*
 		go = GameObjectRegistry::sInstance->CreateGameObject('ENVT');
 		//Vector3 mouseLocation = RoboMath::GetRandomVector(mouseMin, mouseMax);
 
@@ -124,6 +132,7 @@ namespace
 		//	go->SetLocation(Vector3(2,1,0));
 		//	go->SetScale(5);
 		//}
+		*/
 
 	}
 
@@ -144,6 +153,9 @@ void Server::SetupWorld()
 
 void Server::DoFrame()
 {
+
+
+
 	NetworkManagerServer::sInstance->ProcessIncomingPackets();
 
 	NetworkManagerServer::sInstance->CheckForDisconnects();
@@ -164,8 +176,17 @@ void Server::HandleNewClient( ClientProxyPtr inClientProxy )
 	
 	int playerId = inClientProxy->GetPlayerId();
 	
-	ScoreBoardManager::sInstance->AddEntry( playerId, inClientProxy->GetName() );
+	//get score
+	int score = getPlayerScore(inClientProxy->GetName());
+
+	ScoreBoardManager::sInstance->AddEntry(playerId, inClientProxy->GetName());
+
+	//if score != 0 then we add their old score to their new score (0)
+	if(score > 0)
+		ScoreBoardManager::sInstance->IncScore(playerId, score);
+
 	SpawnCatForPlayer( playerId );
+	//ReadyManager::sInstance->AddEntry(playerId, inClientProxy->GetName());
 }
 
 void Server::SpawnCatForPlayer( int inPlayerId )
@@ -176,6 +197,107 @@ void Server::SpawnCatForPlayer( int inPlayerId )
 	//gotta pick a better spawn location than this...
 	cat->SetLocation( Vector3( 1.f - static_cast< float >( inPlayerId ), 0.f, 0.f ) );
 
+}
+
+void Server::LoadHighScore()
+{
+	//declare variables 
+	std::string inLine;
+	std::ifstream file;
+
+	file.open("../Assets/persistance.txt");
+	
+	//Loop to end of file, reading in each line
+	while (getline(file, inLine, (char)'\n')) {
+
+		//Temp Variables
+		Score score;
+		std::stringstream stream(inLine);
+		std::string input;
+
+		//read in player name
+		getline(stream, input, (char)',');
+		score.playerID = input;
+
+		//read in score, convert from string to int.......
+		getline(stream, input, (char)',');
+		score.playerScore = stoi(input); // string to int
+		scoreList.push_back(score);
+	}
+
+	file.close();
+
+
+}
+
+void Server::UpdateHighScore()
+{
+	bool updated;
+	for (ScoreBoardManager::Entry instance : ScoreBoardManager::sInstance->GetEntries()) {
+
+		updated = UpdateExistingHighScore(instance);
+
+		//if we didn't find a matching score, make a new one
+		if (!updated) {
+
+			Score newScore;
+
+			newScore.playerID = instance.GetPlayerName();
+
+			newScore.playerScore = instance.GetScore();
+
+		}
+	}
+}
+
+//update existing high score, returns false if no player was updated
+bool Server::UpdateExistingHighScore(ScoreBoardManager::Entry inScore)
+{
+	//Loop though all of our existing scores
+	for (Score scoreIterator : scoreList) {
+
+		//if we find a matching player name
+		if (inScore.GetPlayerName() == scoreIterator.playerID)
+		{
+			scoreIterator.playerScore = inScore.GetScore(); // set the score
+			return true; //updated
+		}
+	}
+
+	//we didn't find a maching name
+	return false;
+}
+
+void Server::SaveHighScores()
+{
+	//make sure our scores are up to date before saving
+	UpdateHighScore();
+
+	//openfile
+	std::ofstream save("../Assets/persistance.txt");
+
+	for (Score scoreIterator : scoreList) {
+
+		save << scoreIterator.playerID << ',' << scoreIterator.playerScore;
+		save << '\n';
+
+	}
+
+	save.close();
+}
+
+//pass in player name, returns their corrosponding score
+int Server::getPlayerScore(std::string name)
+{
+	//loop through every score we have
+	for (Score scoreIterator : scoreList) {
+
+		//if names match, return that score
+		if (name == scoreIterator.playerID)
+			return scoreIterator.playerScore;
+	}
+
+	return 0;
 }
 
 void Server::HandleLostClient( ClientProxyPtr inClientProxy )
@@ -190,6 +312,9 @@ void Server::HandleLostClient( ClientProxyPtr inClientProxy )
 	{
 		cat->SetDoesWantToDie( true );
 	}
+
+	UpdateHighScore();
+	SaveHighScores();
 }
 
 RoboCatPtr Server::GetCatForPlayer( int inPlayerId )

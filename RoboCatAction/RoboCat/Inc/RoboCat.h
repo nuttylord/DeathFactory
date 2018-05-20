@@ -63,7 +63,7 @@ private:
 	float mGravity;
 	float mJumpStrength;
 
-	float				mFriction;
+	//float				mFriction;
 	bool				mIsPunching;
 
 

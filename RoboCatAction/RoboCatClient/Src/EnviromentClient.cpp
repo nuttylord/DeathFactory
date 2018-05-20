@@ -32,7 +32,7 @@ EnviromentClient::EnviromentClient()
 	
 
 
-		mSpriteComponent->SetTexture(TextureManager::sInstance->GetTexture("block"));
+		mSpriteComponent->SetTexture(TextureManager::sInstance->GetTexture("pipe"));
 	
 	if(mType == Enviroment::Type::GasPipe)
 		mSpriteComponent->SetTexture(TextureManager::sInstance->GetTexture("pipe"));

@@ -17,6 +17,15 @@ public:
 	void	SpawnCatForPlayer( int inPlayerId );
 
 
+	//peristance related stuffs
+	void LoadHighScore();
+	void UpdateHighScore();
+	bool UpdateExistingHighScore(ScoreBoardManager::Entry inScore);
+	void SaveHighScores();
+	int getPlayerScore(std::string name);
+
+
+
 private:
 	Server();
 	

@@ -17,7 +17,7 @@ RoboCat::RoboCat() :
 	mHealth( 10 ),
 	mAcceleration(8), //new
 	mFriction(30), //new - higher value means lower friction
-	mGravity(1.f),
+	mGravity(3.f),
 	mJumpStrength(10.f)
 {
 	SetCollisionRadius( 0.25f );
@@ -82,10 +82,12 @@ void RoboCat::AdjustVelocityByThrust( float inDeltaTime )
 	if(friction.Length() != 0 )
 		friction = friction / mFriction; //normalize
 
-	mVelocity = mVelocity + friction;
-
 	//ADD GRAVITY
 	mVelocity += Vector3(0, mGravity * inDeltaTime, 0);
+
+	mVelocity = mVelocity + friction;
+
+
 
 	//check not exceeding max speed
 	if (mVelocity.Length() > mMaxLinearSpeed) {

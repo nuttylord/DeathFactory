@@ -15,7 +15,7 @@ TextureManager::TextureManager()
 	CacheTexture( "yarn", "../Assets/yarn.png" );
 	CacheTexture("factory", "../Assets/Factory.png");
 	CacheTexture("block", "../Assets/block.png");
-	CacheTexture("pipe", "../Assets/pipe.png");
+	CacheTexture("pipe", "../Assets/pipe_small.png");
 	CacheTexture("walking_left", "../Assets/singleWalkingLeft.png");
 	CacheTexture("walking_right", "../Assets/singleWalkingRight.png");
 	CacheTexture("entities", "../Assets/Entities.png");

@@ -12,3 +12,7 @@
 #include <MouseServer.h>
 #include <YarnServer.h>
 #include <EnviromentServer.h>
+
+#include <fstream>
+#include <iostream>
+#include <sstream>
