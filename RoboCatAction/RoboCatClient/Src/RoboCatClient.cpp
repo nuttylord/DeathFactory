@@ -9,7 +9,7 @@ RoboCatClient::RoboCatClient() :
 
 	//get sprite component
 	mSpriteComponent.reset( new SpriteComponent( this ) );
-	mSpriteComponent->SetTexture( TextureManager::sInstance->GetTexture( "cat" ) );
+	mSpriteComponent->SetTexture( TextureManager::sInstance->GetTexture( "walking_right" ) );
 }
 
 void RoboCatClient::HandleDying()
@@ -56,6 +56,14 @@ void RoboCatClient::Update()
 			mTimeLocationBecameOutOfSync = 0.f;
 		}
 	}
+
+
+
+	//update sprite
+	if(GetRotation() < 3.14159)
+		mSpriteComponent->SetTexture(TextureManager::sInstance->GetTexture("walking_right"));
+	else
+		mSpriteComponent->SetTexture(TextureManager::sInstance->GetTexture("walking_left"));
 }
 
 void RoboCatClient::Read( InputMemoryBitStream& inInputStream )

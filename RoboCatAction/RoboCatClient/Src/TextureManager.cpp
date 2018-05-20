@@ -13,8 +13,12 @@ TextureManager::TextureManager()
 	CacheTexture( "cat", "../Assets/cat.png" );
 	CacheTexture( "mouse", "../Assets/mouse.png" );
 	CacheTexture( "yarn", "../Assets/yarn.png" );
-	//CacheTexture("BG", "../Assets/GroundInverted.png");
+	CacheTexture("factory", "../Assets/Factory.png");
 	CacheTexture("block", "../Assets/block.png");
+	CacheTexture("pipe", "../Assets/pipe.png");
+	CacheTexture("walking_left", "../Assets/singleWalkingLeft.png");
+	CacheTexture("walking_right", "../Assets/singleWalkingRight.png");
+	CacheTexture("entities", "../Assets/Entities.png");
 	
 }
 	

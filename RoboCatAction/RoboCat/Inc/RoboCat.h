@@ -53,6 +53,8 @@ private:
 
 	//New Variables
 	float mFriction;
+	float mGravity;
+	float mJumpStrength;
 
 	//bounce fraction when hitting various things
 	float				mWallRestitution;

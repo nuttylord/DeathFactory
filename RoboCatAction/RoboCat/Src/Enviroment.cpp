@@ -27,14 +27,13 @@ uint32_t Enviroment::Write(OutputMemoryBitStream & inOutputStream, uint32_t inDi
 	{
 		inOutputStream.Write((bool)false);
 	}
-	/*
+	
 	if (inDirtyState & EERS_Type)
 	{
 		inOutputStream.Write((bool)true);
 
-		
 
-		inOutputStream.Write(getType());
+		inOutputStream.Write(mType);
 
 		writtenState |= EERS_Type;
 	}
@@ -42,7 +41,7 @@ uint32_t Enviroment::Write(OutputMemoryBitStream & inOutputStream, uint32_t inDi
 	{
 		inOutputStream.Write((bool)false);
 	}
-	*/
+	
 
 
 	return writtenState;
@@ -54,23 +53,31 @@ void Enviroment::Read(InputMemoryBitStream & inInputStream)
 	bool stateBit;
 
 	inInputStream.Read(stateBit);
+	//if state bit is true
 	if (stateBit)
 	{
+		//declare location and rotation
 		Vector3 location;
+		float rotation;
+
+		//Read them in, so these need to be after the state bit in the stream
 		inInputStream.Read(location.mX);
 		inInputStream.Read(location.mY);
 		SetLocation(location);
 
+		inInputStream.Read(rotation);
+		SetRotation(rotation);
+
 	}
-	/*
+	
 	inInputStream.Read(stateBit);
 	if (stateBit)
 	{
-		Vector3 color;
-		inInputStream.Read(color);
-		SetColor(color);
+		Type type;
+		inInputStream.Read(type);
+		setType(type);
 	}
-	*/
+	
 }
 
 bool Enviroment::HandleCollisionWithPlayer(RoboCat * incat)
@@ -80,6 +87,11 @@ bool Enviroment::HandleCollisionWithPlayer(RoboCat * incat)
 
 
 	return false;
+}
+
+void Enviroment::setType(Type input)
+{
+	mType = input;
 }
 
 Enviroment::Enviroment()

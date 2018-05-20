@@ -16,9 +16,11 @@ RoboCat::RoboCat() :
 	mIsShooting( false ),
 	mHealth( 10 ),
 	mAcceleration(8), //new
-	mFriction(30) //new - higher value means lower friction
+	mFriction(30), //new - higher value means lower friction
+	mGravity(1.f),
+	mJumpStrength(10.f)
 {
-	SetCollisionRadius( 0.5f );
+	SetCollisionRadius( 0.25f );
 }
 
 void RoboCat::ProcessInput( float inDeltaTime, const InputState& inInputState )
@@ -27,17 +29,41 @@ void RoboCat::ProcessInput( float inDeltaTime, const InputState& inInputState )
 
 	//turning...
 	float newRotation = GetRotation() + inInputState.GetDesiredHorizontalDelta() * mMaxRotationSpeed * inDeltaTime;
-	SetRotation( newRotation );
+	//SetRotation( newRotation );
+
+	//if HorizontalDelta is > 0, we want to move right
+	if (inInputState.GetDesiredHorizontalDelta() > 0)
+	{
+		//set rotation
+		SetRotation(1.5708f);
+		mVelocity += Vector3(mAcceleration * inDeltaTime, 0, 0);
+
+
+	}
+	//if horizontal delta is < 0, we want to move left
+	else if (inInputState.GetDesiredHorizontalDelta() < 0) {
+
+		//set rotation
+		SetRotation(4.71239f);
+		mVelocity += Vector3(-mAcceleration *inDeltaTime, 0, 0);
+
+	}
+
+	if (inInputState.GetDesiredVerticalDelta() > 0 )
+	{
+		mVelocity += Vector3(0, -mJumpStrength * inDeltaTime, 0);
+	}
 
 	//moving...
-	float inputForwardDelta = inInputState.GetDesiredVerticalDelta();
-	mThrustDir = inputForwardDelta;
+	//float inputForwardDelta = inInputState.GetDesiredHorizontalDelta();
+	//mThrustDir = inputForwardDelta;
 
 
 	mIsShooting = inInputState.IsShooting(); 
 
 }
 
+//this  will become our jump function
 void RoboCat::AdjustVelocityByThrust( float inDeltaTime )
 {
 	//just set the velocity based on the thrust direction -- no thrust will lead to 0 velocity
@@ -57,6 +83,9 @@ void RoboCat::AdjustVelocityByThrust( float inDeltaTime )
 		friction = friction / mFriction; //normalize
 
 	mVelocity = mVelocity + friction;
+
+	//ADD GRAVITY
+	mVelocity += Vector3(0, mGravity * inDeltaTime, 0);
 
 	//check not exceeding max speed
 	if (mVelocity.Length() > mMaxLinearSpeed) {
