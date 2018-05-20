@@ -18,10 +18,27 @@ public:
 	GameObject();
 	virtual ~GameObject() {} 
 
+	enum Type
+	{ // TL - Danny, here is where magic can happen! use this enum to set up as many different types of object as possible
+		MovingPlatform,
+		SpinningSaw, // pixel dimensions width:65, height:65
+		GasPipe, // pixel dimensions width:55, height:16
+		Fan,
+		ConveyorBelt,
+		LongPlatform,
+		ShortPlatform, // pixel dimensions width:55, height:16
+		GameObj,
+		Background,
+		PlayerCharacter, // pixel dimensions width:20, height:31
+		TypeCount
+	};
 
 	//virtual void setType(inputType);
 
 	//virtual Enviroment* GetAsEnviroment() {return nullptr; }
+	virtual const Type		getType()				const	{ return Type::GameObj; }
+	virtual void			setType(Type input)				{	/*does nothing*/	}
+
 
 	virtual	RoboCat*	GetAsCat()							{ return nullptr; }
 	// New Functions for server

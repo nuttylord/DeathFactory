@@ -90,10 +90,6 @@ bool Enviroment::HandleCollisionWithCat(RoboCat* incat)
 	return false;
 }
 
-void Enviroment::setType(Type input)
-{
-	mType = input;
-}
 
 Enviroment::Enviroment()
 {

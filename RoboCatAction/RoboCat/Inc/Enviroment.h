@@ -3,17 +3,9 @@ class Enviroment : public GameObject
 public:
 	CLASS_IDENTIFICATION('ENVT', GameObject)
 
-	enum Type
-	{
-		MovingPlatform,
-		SpinningSaw,
-		GasPipe,
-		Fan,
-		ConveyorBelt,
-		LongPlatform,
-		ShortPlatform,
-		TypeCount
-	};
+	typedef shared_ptr< Enviroment >	EnviromentPtr;
+
+	
 
 	enum EEnviromentReplicationState
 	{
@@ -41,14 +33,14 @@ public:
 	virtual unsigned int	getCategory() const;
 
 
-	virtual uint32_t	Write(OutputMemoryBitStream& inOutputStream, uint32_t inDirtyState) const override;
-	virtual void		Read(InputMemoryBitStream& inInputStream) override;
+	virtual uint32_t		Write(OutputMemoryBitStream& inOutputStream, uint32_t inDirtyState) const override;
+	virtual void			Read(InputMemoryBitStream& inInputStream) override;
 
 
-	virtual bool HandleCollisionWithCat(RoboCat* incat);
+	virtual bool			HandleCollisionWithCat(RoboCat* incat);
 
-	Type getType() { return mType; }
-	void setType(Type input);
+	virtual const Type		getType()					const override	{ return mType; }
+	virtual void			setType(Type input)			override		{ mType = input; }
 
 protected:
 	Enviroment();
@@ -65,4 +57,3 @@ private:
 
 };
 
-typedef shared_ptr< Enviroment >	EnviromentPtr;

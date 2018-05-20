@@ -59,7 +59,6 @@ private:
 
 	//New Variables
 
-	float mFriction;
 	float mGravity;
 	float mJumpStrength;
 

@@ -82,16 +82,16 @@ namespace
 		//Vector3 mouseMax(5.f, 3.f, 0.f);
 		//GameObjectPtr go;
 
-
+		GameObjectPtr go;
 		//make a mouse somewhere- where will these come from?
 		for (float i = -6; i < 5; i+= 0.75f)
 		{
 			//go = GameObjectRegistry::sInstance->CreateGameObject('ENVT');
 			//Vector3 mouseLocation = RoboMath::GetRandomVector(mouseMin, mouseMax);
 
-			EnviromentPtr go = std::static_pointer_cast< Enviroment >(GameObjectRegistry::sInstance->CreateGameObject('ENVT'));
+			go = std::static_pointer_cast< Enviroment >(GameObjectRegistry::sInstance->CreateGameObject('ENVT'));
 			go->SetLocation(Vector3(i, 2, 0));
-			go->setType(Enviroment::Type::GasPipe);
+			go->setType(GameObject::Type::GasPipe);
 			go->SetScale(1);
 			
 			
