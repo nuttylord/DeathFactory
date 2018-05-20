@@ -21,8 +21,9 @@ private:
 	Server();
 	
 	// TL - server based quadtree collisions. 
-	Quadtree*	mQuadtree;
-	void		DoObjectCollision();
+	unique_ptr<Quadtree>		mQuadtree;
+	std::set< GameObjectPtr >	objectSet;
+	void						DoObjectCollision();
 
 	bool		InitNetworkManager();
 	void		SetupWorld();

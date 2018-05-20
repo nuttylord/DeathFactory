@@ -43,7 +43,7 @@ public:
 	virtual void		Read(InputMemoryBitStream& inInputStream) override;
 
 
-	virtual bool HandleCollisionWithPlayer(RoboCat* incat);
+	virtual bool HandleCollisionWithCat(RoboCat* incat);
 
 	Type getType() { return mType; }
 
