@@ -90,19 +90,18 @@ namespace
 		//Vector3 mouseMax(5.f, 3.f, 0.f);
 		GameObjectPtr go;
 
-
-		//pipeFloor
+		//make a mouse somewhere- where will these come from?
 		for (float i = 0; i < 10; i++)
 		{
 			//go = GameObjectRegistry::sInstance->CreateGameObject('ENVT');
 			//Vector3 mouseLocation = RoboMath::GetRandomVector(mouseMin, mouseMax);
 
+
 			EnviromentPtr make = std::static_pointer_cast< Enviroment >(GameObjectRegistry::sInstance->CreateGameObject('ENVT'));
 			make->SetLocation(Vector3((i*0.6f) -6, 2, 0));
 			make->setType(Enviroment::Type::GasPipe);
 			make->SetScale(1);
-			
-			
+				
 		}
 		/*
 		go = GameObjectRegistry::sInstance->CreateGameObject('ENVT');
