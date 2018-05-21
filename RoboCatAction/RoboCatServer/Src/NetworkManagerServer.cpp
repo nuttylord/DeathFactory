@@ -169,13 +169,13 @@ void NetworkManagerServer::SendStatePacketToClient( ClientProxyPtr inClientProxy
 
 	//AddWorldStateToPacket(statePacket);
 
-	
-
 	WriteLastMoveTimestampIfDirty( statePacket, inClientProxy );
 
 	AddCollisionStateToPacket( statePacket );
 	
 	AddScoreBoardStateToPacket( statePacket );
+
+	AddReadyStateToPacket(statePacket);
 
 	ReplicationManagerTransmissionData* rmtd = new ReplicationManagerTransmissionData( &inClientProxy->GetReplicationManagerServer() );
 	inClientProxy->GetReplicationManagerServer().Write( statePacket, rmtd );
@@ -183,6 +183,12 @@ void NetworkManagerServer::SendStatePacketToClient( ClientProxyPtr inClientProxy
 
 	SendPacket( statePacket, inClientProxy->GetSocketAddress() );
 	
+}
+
+void NetworkManagerServer::AddReadyStateToPacket(OutputMemoryBitStream& inOutputStream) {
+
+	ReadyManager::sInstance->Write(inOutputStream);
+
 }
 
 void NetworkManagerServer::WriteLastMoveTimestampIfDirty( OutputMemoryBitStream& inOutputStream, ClientProxyPtr inClientProxy )

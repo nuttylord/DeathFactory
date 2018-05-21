@@ -114,9 +114,17 @@ void NetworkManagerClient::HandleStatePacket( InputMemoryBitStream& inInputStrea
 		//HandleGameObjectState( inPacketBuffer );
 		HandleScoreBoardState( inInputStream );
 
+		//handle our ReadyUpManager
+		HandleReadyState(inInputStream);
+
 		//tell the replication manager to handle the rest...
 		mReplicationManagerClient.Read( inInputStream );
 	}
+}
+
+void NetworkManagerClient::HandleReadyState(InputMemoryBitStream& inInputStream)
+{
+	ReadyManager::sInstance->Read(inInputStream);
 }
 
 void NetworkManagerClient::ReadLastMoveProcessedOnServerTimestamp( InputMemoryBitStream& inInputStream )

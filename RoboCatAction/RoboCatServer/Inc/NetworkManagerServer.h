@@ -36,6 +36,7 @@ private:
 			void	AddCollisionStateToPacket(OutputMemoryBitStream& inOutputStream);
 
 			void	SendStatePacketToClient( ClientProxyPtr inClientProxy );
+			void AddReadyStateToPacket(OutputMemoryBitStream & inOutputStream);
 			void	WriteLastMoveTimestampIfDirty( OutputMemoryBitStream& inOutputStream, ClientProxyPtr inClientProxy );
 
 			void	HandleInputPacket( ClientProxyPtr inClientProxy, InputMemoryBitStream& inInputStream );

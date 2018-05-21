@@ -26,6 +26,7 @@ void RoboCatClient::HandleDying()
 
 void RoboCatClient::Update()
 {
+
 	//is this the cat owned by us?
 	if( GetPlayerId() == NetworkManagerClient::sInstance->GetPlayerId() )
 	{
@@ -56,6 +57,7 @@ void RoboCatClient::Update()
 			mTimeLocationBecameOutOfSync = 0.f;
 		}
 	}
+
 
 
 

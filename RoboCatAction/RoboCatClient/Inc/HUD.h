@@ -11,6 +11,8 @@ public:
 
 	void Render();
 
+	void RenderDisplayMessage();
+
 	void			SetPlayerHealth( int inHealth )	{ mHealth = inHealth; }
 
 private:

@@ -86,10 +86,10 @@ namespace
 		//make a mouse somewhere- where will these come from?
 		for (float i = 0; i < 10; i++)
 		{
-			EnviromentPtr make = std::static_pointer_cast< Enviroment >(GameObjectRegistry::sInstance->CreateGameObject('ENVT'));
-			make->SetLocation(Vector3((i*0.6f) -6, 2, 0));
-			make->setType(GameObject::Type::GasPipe);
-			make->SetScale(1);
+			//EnviromentPtr make = std::static_pointer_cast< Enviroment >(GameObjectRegistry::sInstance->CreateGameObject('ENVT'));
+			//make->SetLocation(Vector3((i*0.6f) -6, 2, 0));
+			//make->setType(GameObject::Type::GasPipe);
+			//make->SetScale(1);
 		}
 	}
 }
@@ -108,9 +108,26 @@ void Server::SetupWorld()
 
 void Server::DoFrame()
 {
+	
+	if (ReadyManager::sInstance->IsGamePlaying()) {
 
+		//allowPlayers to move
+		
+	}
+	else if (ReadyManager::sInstance->IsEveryoneReady())
+	{
+			//game not playing but ready to start
+			ReadyManager::sInstance->StartGame();
 
+	}
+	else {
+		// game not player, not ready to start
+		
 
+	}
+	
+
+	
 	NetworkManagerServer::sInstance->ProcessIncomingPackets();
 
 	NetworkManagerServer::sInstance->CheckForDisconnects();
@@ -144,7 +161,7 @@ void Server::HandleNewClient( ClientProxyPtr inClientProxy )
 		ScoreBoardManager::sInstance->IncScore(playerId, score);
 
 	SpawnCatForPlayer( playerId );
-	//ReadyManager::sInstance->AddEntry(playerId, inClientProxy->GetName());
+	ReadyManager::sInstance->AddEntry(playerId, inClientProxy->GetName());
 }
 
 void Server::SpawnCatForPlayer( int inPlayerId )
@@ -153,7 +170,7 @@ void Server::SpawnCatForPlayer( int inPlayerId )
 	cat->SetColor( ScoreBoardManager::sInstance->GetEntry( inPlayerId )->GetColor() );
 	cat->SetPlayerId( inPlayerId );
 	//gotta pick a better spawn location than this...
-	cat->SetLocation( Vector3( 1.f - static_cast< float >( inPlayerId ), 0.f, 0.f ) );
+	cat->SetLocation( Vector3( 1.f - static_cast< float >( inPlayerId / 2 ), 0.f, 0.f ) );
 
 }
 
