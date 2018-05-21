@@ -51,7 +51,7 @@ void YarnClient::Read( InputMemoryBitStream& inInputStream )
 }
 
 //you look like you hit a cat on the client, so disappear ( whether server registered or not
-bool YarnClient::HandleCollisionWithCat( RoboCat* inCat )
+bool YarnClient::HandleCollisionWithPlayer( RoboCat* inCat )
 {
 	if( GetPlayerId() != inCat->GetPlayerId() )
 	{

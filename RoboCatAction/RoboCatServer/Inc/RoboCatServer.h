@@ -16,6 +16,8 @@ public:
 
 	void TakeDamage( int inDamagingPlayerId );
 
+	uint32_t GetClassId() { return 'RCAT'; }
+
 protected:
 	RoboCatServer();
 

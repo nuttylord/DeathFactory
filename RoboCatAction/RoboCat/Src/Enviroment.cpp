@@ -81,7 +81,7 @@ void Enviroment::Read(InputMemoryBitStream & inInputStream)
 	
 }
 
-bool Enviroment::HandleCollisionWithCat(RoboCat* incat)
+bool Enviroment::HandleCollisionWithPlayer(RoboCat* incat)
 {
 
 	//depending on the enviroment type we will handle collision differently.

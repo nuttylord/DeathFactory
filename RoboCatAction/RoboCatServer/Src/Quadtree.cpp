@@ -82,7 +82,11 @@ void Quadtree::CheckObjectCollision(set<GameObjectPtr>& collisionSet, vector<vec
 			size_t size = collisionSet.size();
 
 			for (GameObjectPtr obj : collisionSet)
+			{
+				
 				outputVector.push_back(obj);
+			}
+				
 
 			// N E S T E D V E C T O R O U T P U T 
 			QuadVector.push_back(outputVector);
@@ -107,26 +111,26 @@ void Quadtree::CheckObjectCollision(set<GameObjectPtr>& collisionSet, vector<vec
 		quadRect = mNE->getBoundingRect();
 		for (GameObjectPtr object : collisionSet)
 		{
-			if (contains(quadRect, node))
-				mNESet.insert(node);
+			if (contains(quadRect, object))
+				mNESet.insert(object);
 		}
 		quadRect = mNW->getBoundingRect();
 		for (GameObjectPtr object : collisionSet)
 		{
-			if (contains(quadRect, node))
-				mNWSet.insert(node);
+			if (contains(quadRect, object))
+				mNWSet.insert(object);
 		}
 		quadRect = mSE->getBoundingRect();
 		for (GameObjectPtr object : collisionSet)
 		{
-			if (contains(quadRect, node))
-				mSESet.insert(node);
+			if (contains(quadRect, object))
+				mSESet.insert(object);
 		}
 		quadRect = mSW->getBoundingRect();
 		for (GameObjectPtr object : collisionSet)
 		{
-			if (contains(quadRect, node))
-				mSWSet.insert(node);
+			if (contains(quadRect, object))
+				mSWSet.insert(object);
 		}
 		// clear the set once you are done !
 		collisionSet.clear();

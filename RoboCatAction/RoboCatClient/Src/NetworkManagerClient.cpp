@@ -107,6 +107,9 @@ void NetworkManagerClient::HandleStatePacket( InputMemoryBitStream& inInputStrea
 	{
 		ReadLastMoveProcessedOnServerTimestamp( inInputStream );
 
+		// handle new collisions computed by the server. 
+		HandleCollisionState( inInputStream );
+
 		//old
 		//HandleGameObjectState( inPacketBuffer );
 		HandleScoreBoardState( inInputStream );
@@ -131,6 +134,47 @@ void NetworkManagerClient::ReadLastMoveProcessedOnServerTimestamp( InputMemoryBi
 		InputManager::sInstance->GetMoveList().RemovedProcessedMoves( mLastMoveProcessedByServerTimestamp );
 
 	}
+}
+
+void NetworkManagerClient::HandleCollisionState(InputMemoryBitStream& inInputStream)
+{
+	//copy the mNetworkIdToGameObjectMap so that anything that doesn't get an updated can be destroyed...
+	//IntToGameObjectMap	objectsToDestroy = mNetworkIdToGameObjectMap;
+
+	int stateCount;
+	inInputStream.Read(stateCount);
+	if (stateCount > 0)
+	{
+		for (int stateIndex = 0; stateIndex < stateCount; ++stateIndex)
+		{
+			int networkId;
+			uint32_t fourCC;
+
+			inInputStream.Read(networkId);
+			inInputStream.Read(fourCC);
+			GameObjectPtr go;
+			auto itGO = mNetworkIdToGameObjectMap.find(networkId);
+			//didn't find it, better create it!
+			if (itGO == mNetworkIdToGameObjectMap.end())
+			{
+				go = GameObjectRegistry::sInstance->CreateGameObject(fourCC);
+				go->SetNetworkId(networkId);
+				AddToNetworkIdToGameObjectMap(go);
+			}
+			else
+			{
+				//found it
+				go = itGO->second;
+			}
+
+			//now we can update into it
+			go->Read(inInputStream);
+			//objectsToDestroy.erase(networkId);
+		}
+	}
+
+	//anything left gets the axe
+	//DestroyGameObjectsInMap(objectsToDestroy);
 }
 
 void NetworkManagerClient::HandleGameObjectState( InputMemoryBitStream& inInputStream )

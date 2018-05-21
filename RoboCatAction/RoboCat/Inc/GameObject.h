@@ -5,7 +5,7 @@ virtual uint32_t GetClassId() const { return kClassId; } \
 static GameObject* CreateInstance() { return static_cast< GameObject* >( new inClass() ); } \
 
 
-
+// an object in a game, idk, look up unity ok! 
 class GameObject
 {
 public:
@@ -18,8 +18,9 @@ public:
 	GameObject();
 	virtual ~GameObject() {} 
 
+	// TL - Danny, here is where magic can happen! use this enum to set up as many different types of object as possible
 	enum Type
-	{ // TL - Danny, here is where magic can happen! use this enum to set up as many different types of object as possible
+	{ 
 		MovingPlatform,
 		SpinningSaw, // pixel dimensions width:65, height:65
 		GasPipe, // pixel dimensions width:55, height:16
@@ -47,10 +48,13 @@ public:
 	virtual const float		GetWallRestitution()	const	{ return 0; }
 	virtual const float		GetCatRestitution()		const	{ return 0; }
 
+	const bool				GetIsDirty()			const	{ return mIsDirty; }
+	void					SetIsDirty(bool isDirty)		{ mIsDirty = isDirty; }
+
 	virtual uint32_t GetAllStateMask()	const { return 0; }
 
 	//return whether to keep processing collision
-	virtual bool	HandleCollisionWithCat( RoboCat* inCat ) { ( void ) inCat; return true; }
+	virtual bool	HandleCollisionWithPlayer( RoboCat* inCat ) { ( void ) inCat; return true; }
 
 	virtual void	Update();
 
@@ -88,6 +92,8 @@ public:
 	virtual void		Read( InputMemoryBitStream& inInputStream )									{ (void)inInputStream; }
 
 private:
+
+	bool											mIsDirty = false;
 
 
 	Vector3											mLocation;

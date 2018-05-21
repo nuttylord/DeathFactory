@@ -30,7 +30,7 @@ private:
 	float						height;
 	int							level;
 	int							maxObjects;
-	GameObjectPtr				node;
+	//GameObject*					node;
 	SDL_Rect					quadRect;
 
 	//set<GameObjectPtr>			mCollisionSet;

@@ -1,6 +1,5 @@
 
 #include <RoboCatServerPCH.h>
-//#include <Quadtree.h>
 #include <set>
 #include <vector>
 #include <iostream>
@@ -33,7 +32,7 @@ Server::Server()
 	//SDL_Window
 	//::sInstance->
 	
-	mQuadtree.reset( new Quadtree(-3.6f, -4.6f, 7.2f, 9.2f, 1, 5) );
+	mQuadtree.reset( new Quadtree(-3.6f, -4.6f, 7.2f, 9.2f, 1, 6) );
 	
 	//NetworkManagerServer::sInstance->SetDropPacketChance( 0.8f );
 	//NetworkManagerServer::sInstance->SetSimulatedLatency( 0.25f );
@@ -62,7 +61,7 @@ bool Server::InitNetworkManager()
 
 namespace
 {
-	
+	// creates mice !
 	void CreateRandomMice( int inMouseCount )
 	{
 		Vector3 mouseMin( -5.f, -3.f, 0.f );
@@ -77,65 +76,22 @@ namespace
 			go->SetLocation( mouseLocation );
 		}
 	}
-
-
 }
 
 namespace
 {
-
+	// creates the environment
 	void CreateEnviroment()
 	{
-		//Vector3 mouseMin(-5.f, -3.f, 0.f);
-		//Vector3 mouseMax(5.f, 3.f, 0.f);
-		GameObjectPtr go;
-
 		//make a mouse somewhere- where will these come from?
 		for (float i = 0; i < 10; i++)
 		{
-			//go = GameObjectRegistry::sInstance->CreateGameObject('ENVT');
-			//Vector3 mouseLocation = RoboMath::GetRandomVector(mouseMin, mouseMax);
-
-
 			EnviromentPtr make = std::static_pointer_cast< Enviroment >(GameObjectRegistry::sInstance->CreateGameObject('ENVT'));
 			make->SetLocation(Vector3((i*0.6f) -6, 2, 0));
-			make->setType(Enviroment::Type::GasPipe);
+			make->setType(GameObject::Type::GasPipe);
 			make->SetScale(1);
-				
 		}
-		/*
-		go = GameObjectRegistry::sInstance->CreateGameObject('ENVT');
-		//Vector3 mouseLocation = RoboMath::GetRandomVector(mouseMin, mouseMax);
-
-		go->SetLocation(Vector3(6, -3.5, 0));
-		go->SetScale(5);
-
-		go = GameObjectRegistry::sInstance->CreateGameObject('ENVT');
-		//Vector3 mouseLocation = RoboMath::GetRandomVector(mouseMin, mouseMax);
-
-		go->SetLocation(Vector3(6, -3.8, 0));
-		go->SetScale(1);
-
-		go = GameObjectRegistry::sInstance->CreateGameObject('ENVT');
-		//Vector3 mouseLocation = RoboMath::GetRandomVector(mouseMin, mouseMax);
-
-		go->SetLocation(Vector3(-6.5, 3, 0));
-		go->SetScale(5);
-
-		//make a mouse somewhere- where will these come from?
-		//for (int i = -2; i < 3; ++i)
-		//{
-		//	go = GameObjectRegistry::sInstance->CreateGameObject('ENVT');
-		//	//Vector3 mouseLocation = RoboMath::GetRandomVector(mouseMin, mouseMax);
-
-		//	go->SetLocation(Vector3(2,1,0));
-		//	go->SetScale(5);
-		//}
-		*/
-
 	}
-
-
 }
 
 
@@ -161,9 +117,12 @@ void Server::DoFrame()
 
 	NetworkManagerServer::sInstance->RespawnCats();
 
+	
+
 	Engine::DoFrame();
 
 	DoObjectCollision();
+
 	//mQuadtree->CheckObjectCollision();
 
 	NetworkManagerServer::sInstance->SendOutgoingPackets();
@@ -345,33 +304,52 @@ void Server::DoObjectCollision()
 	// TL - so the first aim is to make a set of all the collidable objects in the scene in a set. 
 	const auto& gameObjects = World::sInstance->GetGameObjects();
 	objectSet.clear();
-	for (GameObjectPtr object : gameObjects)
+	GameObjectPtr object;
+	Vector3 output;
+	uint32_t mask;
+	for (GameObjectPtr obj : gameObjects)
+	//for (auto goIt = World::sInstance->GetGameObjects().begin(), end = World::sInstance->GetGameObjects().end(); goIt != end; ++goIt)
 	{
+		//object = goIt->get();
+		mask = obj->GetClassId();
 		
-		uint32_t mask = object->GetClassId();
-		
-		std::cout << mask << std::endl;
+		//std::cout << mask << std::endl;
 		if (mask == 'ENVT' || mask == 'RCAT' || mask == 'MOUS' || mask == 'YARN')
-			objectSet.insert(object);
-	}
+		{
+			//if (mask == 'MOUS')
+			//{
+			//	output = object->GetLocation();
+			//	//LOG("Server Move Time:  deltaTime: %3.4f left rot at %3.4f", output.mX, output.mY);
 
-	//std::copy(fooVec.begin(), fooVec.end(), std::inserter(fooSet, fooSet.end()));
-	//mQuadtree->setCollisionSet(objectSet);
+			//}
+			objectSet.insert(obj);
+		}
+		
+	}
 
 	// Recursive Function that returns nearby Quads of collisions. 
 	mQuadtree->CheckObjectCollision(objectSet, QuadVector);
-	
-	for (vector<GameObjectPtr> quad : QuadVector)
+	//for (vector<GameObjectPtr> quad : QuadVector)
+	RoboCat* obj;
+	GameObjectPtr target;
+	for (vector<GameObjectPtr> quad : QuadVector) 
+	//for(int i = 0; i < QuadVector.size() ; ++i)
 	{
 		// iterate through current Quad
-		for (GameObjectPtr object : quad) {
-			if (object && object->GetClassId() == 'RCAT')
+		for (GameObjectPtr object : quad) 
+		//for(int j = 0; j < QuadVector[i].size(); ++j)
+		{
+			if (/*QuadVector[i][j]*/object != nullptr && /*QuadVector[i][j]*/object->GetClassId() == 'RCAT')
 			{
-				RoboCat* obj = object->GetAsCat();
-				for (auto goIt = quad.begin(), end = quad.end(); goIt != end; ++goIt)
+				obj = /*QuadVector[i][j]*/object->GetAsCat();
+				//for (auto goIt = quad.begin(), end = quad.end(); goIt != end; ++goIt)
+				for (GameObjectPtr target : quad)
+				//for (int k = 0; k < QuadVector[i].size(); ++k)
 				{
-					GameObject* target = goIt->get();
-					if (target != obj && !target->DoesWantToDie())
+					//target = QuadVector[i][k];
+					LOG("yo something happened", 0);
+					//GameObjectPtr target = goIt->get();
+					if (target != object && !target->DoesWantToDie())
 					{
 						//simple collision test for spheres- are the radii summed less than the distance?
 						Vector3 targetLocation = target->GetLocation();
@@ -382,10 +360,10 @@ void Server::DoObjectCollision()
 						float collisionDist = (obj->GetCollisionRadius() + targetRadius);
 						if (distSq < (collisionDist * collisionDist))
 						{
-							//first, tell the other guy there was a collision with a cat, so it can do something...
-
-							if (target->HandleCollisionWithCat(obj))
+							LOG("yo collision", 0);
+							if (target->HandleCollisionWithPlayer(obj))
 							{
+								LOG("yo handling collision", 0);
 								//okay, you hit something!
 								//so, project your location far enough that you're not colliding
 								Vector3 dirToTarget = delta;
@@ -401,10 +379,16 @@ void Server::DoObjectCollision()
 								//RoboCat targetCat = target->GetAsCat();
 								if (target->GetAsCat())
 								{
-									if (target->GetIsPunching())
-										relVel -= target->GetVelocity() * .75f;
+									bool targetPunching = target->GetIsPunching();
+									bool playerPunching = obj->GetIsPunching();
+									Vector3 enemyVel = target->GetVelocity();
+
+									if (std::abs(enemyVel.mX) > std::abs(relVel.mX) && targetPunching && !playerPunching)
+										relVel -= enemyVel * 1.4f;
+									else if (std::abs(enemyVel.mX) > std::abs(relVel.mX) && !targetPunching && playerPunching)
+										relVel -= enemyVel * .7f;
 									else
-										relVel -= target->GetVelocity();
+										relVel -= enemyVel;
 								}
 
 
@@ -429,6 +413,7 @@ void Server::DoObjectCollision()
 									}
 
 									obj->SetVelocity(velocity);
+									obj->SetIsDirty(true);
 								}
 							}
 						}

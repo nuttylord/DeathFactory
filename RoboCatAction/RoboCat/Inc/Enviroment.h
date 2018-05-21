@@ -3,7 +3,6 @@ class Enviroment : public GameObject
 public:
 	CLASS_IDENTIFICATION('ENVT', GameObject)
 
-	typedef shared_ptr< Enviroment >	EnviromentPtr;
 
 	
 
@@ -37,7 +36,7 @@ public:
 	virtual void			Read(InputMemoryBitStream& inInputStream) override;
 
 
-	virtual bool			HandleCollisionWithCat(RoboCat* incat);
+	virtual bool			HandleCollisionWithPlayer(RoboCat* incat);
 
 	virtual const Type		getType()					const override	{ return mType; }
 	virtual void			setType(Type input)			override		{ mType = input; }
@@ -57,3 +56,5 @@ private:
 
 };
 
+
+typedef shared_ptr< Enviroment >	EnviromentPtr;

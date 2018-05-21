@@ -11,7 +11,7 @@ public:
 
 	bool HandleCollisionsWithCat(RoboCat* inCat);
 
-
+	uint32_t GetClassId() { return 'ENVT'; }
 protected:
 	EnviromentServer();
 

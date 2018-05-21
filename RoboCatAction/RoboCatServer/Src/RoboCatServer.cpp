@@ -1,4 +1,5 @@
 #include <RoboCatServerPCH.h>
+//#include <iostream>
 
 RoboCatServer::RoboCatServer() :
 	mCatControlType( ESCT_Human ),
@@ -18,7 +19,7 @@ void RoboCatServer::Update()
 	Vector3 oldLocation = GetLocation();
 	Vector3 oldVelocity = GetVelocity();
 	float oldRotation = GetRotation();
-
+	
 	//are you controlled by a player?
 	//if so, is there a move we haven't processed yet?
 	if( mCatControlType == ESCT_Human )
@@ -37,7 +38,7 @@ void RoboCatServer::Update()
 				SimulateMovement( deltaTime );
 
 				//LOG( "Server Move Time: %3.4f deltaTime: %3.4f left rot at %3.4f", unprocessedMove.GetTimestamp(), deltaTime, GetRotation() );
-
+				
 			}
 
 			moveList.Clear();

@@ -7,7 +7,7 @@ Mouse::Mouse()
 }
 
 
-bool Mouse::HandleCollisionWithCat( RoboCat* inCat )
+bool Mouse::HandleCollisionWithPlayer( RoboCat* inCat )
 {
 	( void ) inCat;
 	return false;

@@ -169,8 +169,12 @@ void NetworkManagerServer::SendStatePacketToClient( ClientProxyPtr inClientProxy
 
 	//AddWorldStateToPacket(statePacket);
 
+	
+
 	WriteLastMoveTimestampIfDirty( statePacket, inClientProxy );
 
+	AddCollisionStateToPacket( statePacket );
+	
 	AddScoreBoardStateToPacket( statePacket );
 
 	ReplicationManagerTransmissionData* rmtd = new ReplicationManagerTransmissionData( &inClientProxy->GetReplicationManagerServer() );
@@ -209,28 +213,57 @@ void NetworkManagerServer::AddWorldStateToPacket( OutputMemoryBitStream& inOutpu
 	}
 }
 
-void NetworkManagerServer::AddEnvironmentStateToPacket(OutputMemoryBitStream& inOutputStream)
+void NetworkManagerServer::AddCollisionStateToPacket(OutputMemoryBitStream& inOutputStream)
 {
 	const auto& gameObjects = World::sInstance->GetGameObjects();
 
+	std::vector< GameObjectPtr > collisionVector;
+
+	// get environment objects
 	for (GameObjectPtr gameObject : gameObjects)
 	{
-		if (gameObject->GetClassId() == 'ENVT') 
-		{
-
-		}
+		if(gameObject->GetClassId() == 'ENVT' || gameObject->GetClassId() == 'RCAT' || gameObject->GetClassId() == 'MOUS' || gameObject->GetClassId() == 'YARN')
+			if (gameObject->GetIsDirty())
+			{
+				collisionVector.push_back(gameObject);
+				gameObject->SetIsDirty(false);
+			}
 	}
-	//EnviromentServer::sInstance->Write(inOutputStream);
 
+	// write the size of the environments into the packet
+	inOutputStream.Write(collisionVector.size());
 
-	inOutputStream.Write(gameObjects.size());
-
-	for (GameObjectPtr gameObject : gameObjects)
+	// push the objects into the packet. 
+	for (GameObjectPtr gameObject : collisionVector)
 	{
 		inOutputStream.Write(gameObject->GetNetworkId());
 		inOutputStream.Write(gameObject->GetClassId());
 		gameObject->Write(inOutputStream, 0xffffffff);
 	}
+}
+
+void NetworkManagerServer::AddEnvironmentStateToPacket(OutputMemoryBitStream& inOutputStream)
+{
+	const auto& gameObjects = World::sInstance->GetGameObjects();
+
+	std::vector< GameObjectPtr > environmentVector;
+
+	// get environment objects
+	for (GameObjectPtr gameObject : gameObjects)
+		if (gameObject->GetClassId() == 'ENVT')
+			environmentVector.push_back(gameObject);
+	
+	// write the size of the environments into the packet
+	inOutputStream.Write(environmentVector.size());
+
+	// push the objects into the packet. 
+	for (GameObjectPtr gameObject : environmentVector)
+	{
+		inOutputStream.Write(gameObject->GetNetworkId());
+		inOutputStream.Write(gameObject->GetClassId());
+		gameObject->Write(inOutputStream, 0xffffffff);
+	}
+	
 }
 
 void NetworkManagerServer::AddScoreBoardStateToPacket( OutputMemoryBitStream& inOutputStream )

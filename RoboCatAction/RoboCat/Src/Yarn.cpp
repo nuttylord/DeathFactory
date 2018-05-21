@@ -70,7 +70,7 @@ uint32_t Yarn::Write( OutputMemoryBitStream& inOutputStream, uint32_t inDirtySta
 
 
 
-bool Yarn::HandleCollisionWithCat( RoboCat* inCat )
+bool Yarn::HandleCollisionWithPlayer( RoboCat* inCat )
 {
 	( void ) inCat;
 

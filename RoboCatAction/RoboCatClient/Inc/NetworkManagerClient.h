@@ -34,6 +34,9 @@ private:
 			void	HandleStatePacket( InputMemoryBitStream& inInputStream );
 			void	ReadLastMoveProcessedOnServerTimestamp( InputMemoryBitStream& inInputStream );
 
+			// new functions
+			void	HandleCollisionState(InputMemoryBitStream& inInputStream);
+
 			void	HandleGameObjectState( InputMemoryBitStream& inInputStream );
 			void	HandleScoreBoardState( InputMemoryBitStream& inInputStream );
 

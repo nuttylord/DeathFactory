@@ -33,6 +33,7 @@ private:
 			void	AddEnvironmentStateToPacket(OutputMemoryBitStream& inOutputStream);
 			void	AddWorldStateToPacket( OutputMemoryBitStream& inOutputStream );
 			void	AddScoreBoardStateToPacket( OutputMemoryBitStream& inOutputStream );
+			void	AddCollisionStateToPacket(OutputMemoryBitStream& inOutputStream);
 
 			void	SendStatePacketToClient( ClientProxyPtr inClientProxy );
 			void	WriteLastMoveTimestampIfDirty( OutputMemoryBitStream& inOutputStream, ClientProxyPtr inClientProxy );

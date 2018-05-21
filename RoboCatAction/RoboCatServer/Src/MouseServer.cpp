@@ -11,7 +11,7 @@ void MouseServer::HandleDying()
 }
 
 
-bool MouseServer::HandleCollisionWithCat( RoboCat* inCat )
+bool MouseServer::HandleCollisionWithPlayer( RoboCat* inCat )
 {
 	//kill yourself!
 	SetDoesWantToDie( true );

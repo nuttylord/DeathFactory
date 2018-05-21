@@ -20,7 +20,7 @@ RoboCat::RoboCat() :
 	mGravity(3.f),
 	mJumpStrength(10.f)
 {
-	SetCollisionRadius( 0.25f );
+	SetCollisionRadius( .25f );
 }
 
 void RoboCat::ProcessInput( float inDeltaTime, const InputState& inInputState )
