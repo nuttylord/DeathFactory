@@ -43,6 +43,11 @@ public:
 
 	virtual uint32_t		Write( OutputMemoryBitStream& inOutputStream, uint32_t inDirtyState ) const override;
 
+	//jumping stuff - DL
+	void Jump(float inDeltaTime);
+	void DecrementJumpTimer();
+
+
 protected:
 	RoboCat();
 
@@ -57,10 +62,13 @@ private:
 	float				mMaxLinearSpeed;
 	float				mMaxRotationSpeed;
 
-	//New Variables
+	//New Variables - DL
 
 	float mGravity;
 	float mJumpStrength;
+	bool mIsJumping = false;
+	float mJumpTimer;
+	float mJumpCounter = -1; // the active 
 
 	float				mFriction;
 	bool				mIsPunching;
