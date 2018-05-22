@@ -19,6 +19,8 @@ mShouldKeepRunning( true )
 
 	ScoreBoardManager::StaticInit();
 
+	ReadyManager::StaticInit();
+
 	SDL_Init( SDL_INIT_VIDEO | SDL_INIT_AUDIO );
 }
 

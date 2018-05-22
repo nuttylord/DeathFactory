@@ -37,15 +37,27 @@ void NetworkManagerClient::ProcessPacket( InputMemoryBitStream& inInputStream, c
 {
 	uint32_t	packetType;
 	inInputStream.Read( packetType );
-	switch( packetType )
+	switch (packetType)
 	{
 	case kWelcomeCC:
-		HandleWelcomePacket( inInputStream );
+		HandleWelcomePacket(inInputStream);
+		//SendSyncPacket();
+
+		/*if (mDeliveryNotificationManager.ReadAndProcessState(inInputStream))
+		{
+			HandleSyncPacket( inInputStream );
+		}*/
 		break;
 	case kStateCC:
-		if( mDeliveryNotificationManager.ReadAndProcessState( inInputStream ) )
+		if (mDeliveryNotificationManager.ReadAndProcessState(inInputStream))
 		{
-			HandleStatePacket( inInputStream );
+			HandleStatePacket(inInputStream);
+		}
+		break;
+	case kSyncCC:
+		if (mDeliveryNotificationManager.ReadAndProcessState(inInputStream))
+		{
+			HandleSyncPacket(inInputStream);
 		}
 		break;
 	}
@@ -86,6 +98,15 @@ void NetworkManagerClient::SendHelloPacket()
 	SendPacket( helloPacket, mServerAddress );
 }
 
+void NetworkManagerClient::SendSyncPacket()
+{
+	OutputMemoryBitStream syncRequestPacket;
+
+	syncRequestPacket.Write(kSyncCC);
+
+	SendPacket(syncRequestPacket, mServerAddress);
+}
+
 void NetworkManagerClient::HandleWelcomePacket( InputMemoryBitStream& inInputStream )
 {
 	if( mState == NCS_SayingHello )
@@ -94,29 +115,86 @@ void NetworkManagerClient::HandleWelcomePacket( InputMemoryBitStream& inInputStr
 		int playerId;
 		inInputStream.Read( playerId );
 		mPlayerId = playerId;
+
+		//HandleEnvironmentState(inInputStream);
+		
+		/*const auto& gameObjects = World::sInstance->GetGameObjects();
+		for (GameObjectPtr obj : gameObjects)
+		{
+			if (obj->GetClassId() == 'ENVT')
+			{
+				
+				LOG("got one ! x: %3.4f, y: %3.4f", obj->GetLocation().mX, obj->GetLocation().mY);
+				obj->UpdateTextures();
+			}
+		}*/
+
 		mState = NCS_Welcomed;
 		LOG( "'%s' was welcomed on client as player %d", mName.c_str(), mPlayerId );
 	}
 }
 
+// unused.
+void NetworkManagerClient::HandleSyncPacket(InputMemoryBitStream& inInputStream)
+{
+	if (mState == NCS_Welcomed)
+	{
+		ReadLastMoveProcessedOnServerTimestamp(inInputStream);
 
+		HandleEnvironmentState(inInputStream);
+
+		// handle new collisions computed by the server. 
+		//HandleCollisionState(inInputStream);
+
+		//old
+		//HandleGameObjectState( inPacketBuffer );
+		//HandleScoreBoardState(inInputStream);
+
+		//handle our ReadyUpManager
+		//HandleReadyState(inInputStream);
+
+		//tell the replication manager to handle the rest...
+		mReplicationManagerClient.Read(inInputStream);
+	}
+}
 
 void NetworkManagerClient::HandleStatePacket( InputMemoryBitStream& inInputStream )
 {
+
 	if( mState == NCS_Welcomed )
 	{
 		ReadLastMoveProcessedOnServerTimestamp( inInputStream );
+		//handle our ReadyUpManager
+		HandleReadyState(inInputStream);
 
 		// handle new collisions computed by the server. 
 		HandleCollisionState( inInputStream );
 
-		//old
-		//HandleGameObjectState( inPacketBuffer );
 		HandleScoreBoardState( inInputStream );
+
+		// check if the number of objects on server matches the number of objects on client.
+		size_t serverWorldSize; // make world size check tiny.
+		inInputStream.Read(serverWorldSize);
+
+		// handle the environment state (this shall only update once at start).
+		//HandleEnvironmentState(inInputStream);
+
+		//LOG("i am client %d and i have %d objects", mPlayerId, serverWorldSize);
+
+		// check you have all the objects. 
+		/*if (!(serverWorldSize == World::sInstance->getCollisionSetNum()))
+			SendSyncPacket();*/
 
 		//tell the replication manager to handle the rest...
 		mReplicationManagerClient.Read( inInputStream );
+
+		
 	}
+}
+
+void NetworkManagerClient::HandleReadyState(InputMemoryBitStream& inInputStream)
+{
+	ReadyManager::sInstance->Read(inInputStream);
 }
 
 void NetworkManagerClient::ReadLastMoveProcessedOnServerTimestamp( InputMemoryBitStream& inInputStream )
@@ -134,6 +212,51 @@ void NetworkManagerClient::ReadLastMoveProcessedOnServerTimestamp( InputMemoryBi
 		InputManager::sInstance->GetMoveList().RemovedProcessedMoves( mLastMoveProcessedByServerTimestamp );
 
 	}
+}
+
+void NetworkManagerClient::HandleEnvironmentState(InputMemoryBitStream& inInputStream)
+{
+	//copy the mNetworkIdToGameObjectMap so that anything that doesn't get an updated can be destroyed...
+	//IntToGameObjectMap	objectsToDestroy = mNetworkIdToGameObjectMap;
+
+	int stateCount;
+	inInputStream.Read(stateCount);
+	if (stateCount > 0)
+	{
+		for (int stateIndex = 0; stateIndex < stateCount; ++stateIndex)
+		{
+			int networkId;
+			uint32_t fourCC;
+
+			inInputStream.Read(networkId);
+			inInputStream.Read(fourCC);
+
+			GameObjectPtr go;
+			auto itGO = mNetworkIdToGameObjectMap.find(networkId);
+			//didn't find it, better create it!
+			if (itGO == mNetworkIdToGameObjectMap.end())
+			{
+				go = GameObjectRegistry::sInstance->CreateGameObject(fourCC);
+				go->SetNetworkId(networkId);
+				AddToNetworkIdToGameObjectMap(go);
+				
+			}
+			else
+			{
+				//found it
+				go = itGO->second;
+			}
+
+			//now we can update into it
+			go->Read(inInputStream);
+			
+			
+			//objectsToDestroy.erase(networkId);
+		}
+	}
+
+	//anything left gets the axe
+	//DestroyGameObjectsInMap(objectsToDestroy);
 }
 
 void NetworkManagerClient::HandleCollisionState(InputMemoryBitStream& inInputStream)
@@ -182,7 +305,7 @@ void NetworkManagerClient::HandleGameObjectState( InputMemoryBitStream& inInputS
 	//copy the mNetworkIdToGameObjectMap so that anything that doesn't get an updated can be destroyed...
 	IntToGameObjectMap	objectsToDestroy = mNetworkIdToGameObjectMap;
 
-	int stateCount;
+	size_t stateCount;
 	inInputStream.Read( stateCount );
 	if( stateCount > 0 )
 	{

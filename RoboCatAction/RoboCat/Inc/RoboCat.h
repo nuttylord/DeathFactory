@@ -14,7 +14,14 @@ public:
 	};
 
 
-	static	GameObject*	StaticCreate()									{ return new RoboCat(); }
+	static	GameObject*	StaticCreate() {
+		
+		return new RoboCat(); 
+	}
+
+	
+	
+	
 
 	virtual uint32_t GetAllStateMask()					const override	{ return ECRS_AllState; }
 
@@ -41,6 +48,9 @@ public:
 	virtual const float		GetWallRestitution()		const override	{ return mWallRestitution; }
 	virtual const float		GetCatRestitution()			const override	{ return mCatRestitution; }
 
+	virtual const uint8_t	GetHealth()					const override	{ return mHealth; }
+	virtual void			SetHealth(uint32_t input)	override		{ mHealth = input; }
+
 	virtual uint32_t		Write( OutputMemoryBitStream& inOutputStream, uint32_t inDirtyState ) const override;
 
 protected:
@@ -48,7 +58,7 @@ protected:
 
 private:
 
-
+	//Type				mType;
 	void	AdjustVelocityByThrust( float inDeltaTime );
 
 	Vector3				mVelocity;
@@ -80,7 +90,7 @@ protected:
 	float				mLastMoveTimestamp;
 
 	float				mThrustDir;
-	int					mHealth;
+	int8_t				mHealth;
 
 	bool				mIsShooting;
 

@@ -7,6 +7,7 @@ public:
 	static const uint32_t	kWelcomeCC = 'WLCM';
 	static const uint32_t	kStateCC = 'STAT';
 	static const uint32_t	kInputCC = 'INPT';
+	static const uint32_t	kSyncCC = 'SYNC'; // added for state synchronisation.
 	static const int		kMaxPacketsPerFrameCount = 10;
 
 	NetworkManager();
@@ -76,10 +77,7 @@ private:
 inline	GameObjectPtr NetworkManager::GetGameObject( int inNetworkId ) const
 { 
 	auto gameObjectIt = mNetworkIdToGameObjectMap.find( inNetworkId );
-	if (inNetworkId == 'ENVT')
-	{
-		LOG("wow", 0);
-	}
+	
 	if( gameObjectIt != mNetworkIdToGameObjectMap.end() )
 	{
 		return gameObjectIt->second;

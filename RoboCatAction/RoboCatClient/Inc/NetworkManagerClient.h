@@ -35,7 +35,11 @@ private:
 			void	ReadLastMoveProcessedOnServerTimestamp( InputMemoryBitStream& inInputStream );
 
 			// new functions
-			void	HandleCollisionState(InputMemoryBitStream& inInputStream);
+			void	SendSyncPacket();
+			void	HandleSyncPacket( InputMemoryBitStream& inInputStream );
+			void	HandleCollisionState( InputMemoryBitStream& inInputStream );
+			void	HandleReadyState( InputMemoryBitStream & inInputStream );
+			void	HandleEnvironmentState( InputMemoryBitStream& inInputStream );
 
 			void	HandleGameObjectState( InputMemoryBitStream& inInputStream );
 			void	HandleScoreBoardState( InputMemoryBitStream& inInputStream );

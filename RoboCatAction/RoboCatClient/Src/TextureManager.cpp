@@ -10,15 +10,20 @@ void TextureManager::StaticInit()
 
 TextureManager::TextureManager()
 {
-	CacheTexture( "cat", "../Assets/cat.png" );
-	CacheTexture( "mouse", "../Assets/mouse.png" );
+	//CacheTexture( "cat", "../Assets/cat.png" );
+	CacheTexture( "title", "../Assets/TitleScreen.png" );
+	CacheTexture( "background", "../Assets/Factory2.png" );
+	CacheTexture( "mouse", "../Assets/coin.png" );
 	CacheTexture( "yarn", "../Assets/yarn.png" );
-	CacheTexture("factory", "../Assets/Factory.png");
-	CacheTexture("block", "../Assets/block.png");
-	CacheTexture("pipe", "../Assets/pipe_small.png");
-	CacheTexture("walking_left", "../Assets/singleWalkingLeft.png");
-	CacheTexture("walking_right", "../Assets/singleWalkingRight.png");
-	CacheTexture("entities", "../Assets/Entities.png");
+	//CacheTexture( "factory", "../Assets/Factory.png" );
+	CacheTexture( "fan", "../Assets/fan.png" );
+	CacheTexture( "spinning_saw", "../Assets/spinning_saw.png" );
+	CacheTexture( "short_pipe", "../Assets/pipe_small.png" );
+	CacheTexture( "long_pipe", "../Assets/pipe_long.png" );
+	CacheTexture( "broken_pipe", "../Assets/broken_pipe.png" );
+	CacheTexture( "walking_left", "../Assets/singleWalkingLeft.png" );
+	CacheTexture( "walking_right", "../Assets/singleWalkingRight.png" );
+	//CacheTexture( "entities", "../Assets/Entities.png");
 	
 }
 	
@@ -35,6 +40,7 @@ bool TextureManager::CacheTexture( string inTextureName, const char* inFileName 
 
 	if( texture == nullptr )
 	{
+		LOG("Failed to load Texture (TextureManager): %s", inFileName);
 		SDL_LogError( SDL_LOG_CATEGORY_ERROR, "Failed to load texture: %s", inFileName );
 		return false;
 	}

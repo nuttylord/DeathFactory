@@ -31,6 +31,30 @@ void HUD::Render()
 	RenderRoundTripTime();
 	RenderScoreBoard();
 	RenderHealth();
+	RenderDisplayMessage();
+}
+
+void HUD::RenderDisplayMessage() {
+
+	//get all players
+	vector<ReadyManager::ReadyPlayer> players = ReadyManager::sInstance->GetEntries();
+
+	
+
+	//loop through
+	for (int k = 0; k < players.size(); k++)
+	{
+		//if players names match
+		if (players[k].GetPlayerId() == NetworkManagerClient::sInstance->GetPlayerId()) 
+		{
+			//Display information to user
+			RenderText(players[k].GetDisplayMessage(), Vector3( 500, 500,0), Colors::Red);
+
+		}
+
+	}
+
+
 }
 
 void HUD::RenderHealth()

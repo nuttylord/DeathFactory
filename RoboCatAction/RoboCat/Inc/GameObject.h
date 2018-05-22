@@ -5,6 +5,7 @@ virtual uint32_t GetClassId() const { return kClassId; } \
 static GameObject* CreateInstance() { return static_cast< GameObject* >( new inClass() ); } \
 
 
+
 // an object in a game, idk, look up unity ok! 
 class GameObject
 {
@@ -31,15 +32,40 @@ public:
 		GameObj,
 		Background,
 		PlayerCharacter, // pixel dimensions width:20, height:31
+		TitleScreen,
 		TypeCount
 	};
 
+	//virtual SDL_Rect&					getRect();
 	//virtual void setType(inputType);
 
 	//virtual Enviroment* GetAsEnviroment() {return nullptr; }
-	virtual const Type		getType()				const	{ return Type::GameObj; }
-	virtual void			setType(Type input)				{	/*does nothing*/	}
+	virtual const Type		getType()				const	{ return mType; }
+	virtual void			setType(Type input);
 
+	virtual void setRectType(Type input)
+	{
+		mType = input;
+		if (input == GameObject::Type::ShortPlatform)
+		{
+			SetWidth(.25f);
+			SetHeight(.1f);
+		}
+		else if (input == GameObject::Type::LongPlatform)
+		{
+			SetWidth(1.25f);
+			SetHeight(.1f);
+		}
+		else if (input == GameObject::Type::PlayerCharacter)
+		{
+			SetWidth(.15f);
+			SetHeight(.25f);
+		}
+	}
+	virtual void			UpdateTextures() {} // this is inherited and called on environment pointers
+
+	virtual bool			getIsNew()						{ return mIsNew; }
+	virtual const void		setIsNew(bool in)				{ mIsNew = in; }
 
 	virtual	RoboCat*	GetAsCat()							{ return nullptr; }
 	// New Functions for server
@@ -79,7 +105,7 @@ public:
 			Vector3		GetForwardVector()			const;
 
 
-			void		SetColor( const Vector3& inColor )					{ mColor = inColor; }
+			void		SetColor( const Vector3& inColor )				{ mColor = inColor; }
 	const Vector3&		GetColor()					const				{ return mColor; }
 
 			bool		DoesWantToDie()				const				{ return mDoesWantToDie; }
@@ -91,10 +117,26 @@ public:
 	virtual uint32_t	Write( OutputMemoryBitStream& inOutputStream, uint32_t inDirtyState ) const	{ (void)inOutputStream; (void)inDirtyState; return 0; }
 	virtual void		Read( InputMemoryBitStream& inInputStream )									{ (void)inInputStream; }
 
+
+	
+
+	virtual const float			GetWidth()								const	{ return mWidth; }
+	virtual const float			GetHeight()								const	{ return mHeight; }
+	virtual void				SetWidth(float width)							{ mWidth = width; }
+	virtual void				SetHeight(float height)							{ mHeight = height; }
+	virtual const uint8_t		GetHealth()								const	{ return 0; }
+	virtual void				SetHealth(uint32_t input)						{}
+	
+
 private:
+	//Type											mType
+	//SDL_Rect										mRect{ 0.f,0.f,0.f,0.f};
 
+	float											mWidth;
+	float											mHeight;
+	Type											mType;
 	bool											mIsDirty = false;
-
+	bool											mIsNew = false;
 
 	Vector3											mLocation;
 	Vector3											mColor;

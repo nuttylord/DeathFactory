@@ -19,8 +19,13 @@ public:
 
 	const std::vector< GameObjectPtr >&	GetGameObjects()	const	{ return mGameObjects; }
 
+	// TL - check during collision (set) and stored here for checking on server for sync.
+	void			setCollisionSetNum(size_t amount)				{ collisionSetNum = amount; }
+	const size_t	getCollisionSetNum()					const	{ return collisionSetNum; }
+
 private:
 
+	size_t collisionSetNum;
 
 	World();
 

@@ -21,45 +21,47 @@ RoboCat::RoboCat() :
 	mJumpStrength(10.f)
 {
 	SetCollisionRadius( .25f );
+	setType(GameObject::Type::PlayerCharacter);
 }
 
 void RoboCat::ProcessInput( float inDeltaTime, const InputState& inInputState )
 {
 	//process our input....
+	if (ReadyManager::sInstance->IsGamePlaying()) {
+		//turning...
+		float newRotation = GetRotation() + inInputState.GetDesiredHorizontalDelta() * mMaxRotationSpeed * inDeltaTime;
+		//SetRotation( newRotation );
 
-	//turning...
-	float newRotation = GetRotation() + inInputState.GetDesiredHorizontalDelta() * mMaxRotationSpeed * inDeltaTime;
-	//SetRotation( newRotation );
-
-	//if HorizontalDelta is > 0, we want to move right
-	if (inInputState.GetDesiredHorizontalDelta() > 0)
-	{
-		//set rotation
-		SetRotation(1.5708f);
-		mVelocity += Vector3(mAcceleration * inDeltaTime, 0, 0);
+		//if HorizontalDelta is > 0, we want to move right
+		if (inInputState.GetDesiredHorizontalDelta() > 0)
+		{
+			//set rotation
+			SetRotation(1.5708f);
+			mVelocity += Vector3(mAcceleration * inDeltaTime, 0, 0);
 
 
+		}
+		//if horizontal delta is < 0, we want to move left
+		else if (inInputState.GetDesiredHorizontalDelta() < 0) {
+
+			//set rotation
+			SetRotation(4.71239f);
+			mVelocity += Vector3(-mAcceleration * inDeltaTime, 0, 0);
+
+		}
+
+		if (inInputState.GetDesiredVerticalDelta() > 0)
+		{
+			mVelocity += Vector3(0, -mJumpStrength * inDeltaTime, 0);
+		}
+
+		//moving...
+		//float inputForwardDelta = inInputState.GetDesiredHorizontalDelta();
+		//mThrustDir = inputForwardDelta;
+
+
+		mIsShooting = inInputState.IsShooting();
 	}
-	//if horizontal delta is < 0, we want to move left
-	else if (inInputState.GetDesiredHorizontalDelta() < 0) {
-
-		//set rotation
-		SetRotation(4.71239f);
-		mVelocity += Vector3(-mAcceleration *inDeltaTime, 0, 0);
-
-	}
-
-	if (inInputState.GetDesiredVerticalDelta() > 0 )
-	{
-		mVelocity += Vector3(0, -mJumpStrength * inDeltaTime, 0);
-	}
-
-	//moving...
-	//float inputForwardDelta = inInputState.GetDesiredHorizontalDelta();
-	//mThrustDir = inputForwardDelta;
-
-
-	mIsShooting = inInputState.IsShooting(); 
 
 }
 
@@ -99,18 +101,23 @@ void RoboCat::AdjustVelocityByThrust( float inDeltaTime )
 
 void RoboCat::SimulateMovement( float inDeltaTime )
 {
-	//simulate us...
-	AdjustVelocityByThrust( inDeltaTime );
+	if (ReadyManager::sInstance->IsGamePlaying()) {
+
+		//simulate us...
+		AdjustVelocityByThrust(inDeltaTime);
 
 
-	SetLocation( GetLocation() + mVelocity * inDeltaTime );
+		SetLocation(GetLocation() + mVelocity * inDeltaTime);
 
-	ProcessCollisions();
+		ProcessCollisions();
+
+	}
 }
 
 void RoboCat::Update()
 {
-	
+	//if (!ReadyManager::sInstance->IsGamePlaying())
+		//SetLocation(Vector3(0, 0, 0));
 }
 
 void RoboCat::ProcessCollisions()
@@ -129,7 +136,7 @@ void RoboCat::ProcessCollisions()
 	//it would be preferable to use a quad tree or some other structure to minimize the
 	//number of collisions that need to be tested.
 	
-	// TL - Realised quickly that this needs to be in world.cpp
+	// TL - Realised quickly that this needs to be in server.cpp
 	//for (auto goIt = World::sInstance->GetGameObjects().begin(), end = World::sInstance->GetGameObjects().end(); goIt != end; ++goIt)
 	//{
 	//	GameObject* target = goIt->get();

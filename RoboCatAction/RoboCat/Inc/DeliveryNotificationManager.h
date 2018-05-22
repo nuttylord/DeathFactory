@@ -9,6 +9,7 @@ public:
 	
 	inline	InFlightPacket*		WriteState( OutputMemoryBitStream& inOutputStream );
 	inline	bool				ReadAndProcessState( InputMemoryBitStream& inInputStream );
+	inline	bool				ReadAndProcessSync(InputMemoryBitStream& inInputStream);
 	
 	void				ProcessTimedOutPackets();
 	
@@ -69,4 +70,17 @@ inline bool	DeliveryNotificationManager::ReadAndProcessState( InputMemoryBitStre
 		ProcessAcks( inInputStream );
 	}
 	return toRet;
+}
+inline bool	DeliveryNotificationManager::ReadAndProcessSync(InputMemoryBitStream& inInputStream)
+{
+	bool toRet = ProcessSequenceNumber(inInputStream);
+	if (mShouldProcessAcks)
+	{
+		ProcessAcks(inInputStream);
+		
+	}
+	if (inInputStream.GetRemainingBitCount() == 0)
+		return false;
+	else
+		return toRet;
 }

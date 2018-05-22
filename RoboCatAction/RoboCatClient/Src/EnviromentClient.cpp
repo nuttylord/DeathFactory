@@ -1,39 +1,103 @@
 #include <RoboCatClientPCH.h>
 
-
-//void EnviromentClient::Read(InputMemoryBitStream & inInputStream)
-//{
-//	bool stateBit;
-//
-//
-//	inInputStream.Read(stateBit);
-//	if (stateBit)
-//	{
-//		Vector3 location;
-//		inInputStream.Read(location.mX);
-//		inInputStream.Read(location.mY);
-//
-//		//dead reckon ahead by rtt, since this was spawned a while ago!
-//		//SetLocation(location + velocity * NetworkManagerClient::sInstance->GetRoundTripTime());
-//
-//
-//		float rotation;
-//		inInputStream.Read(rotation);
-//		SetRotation(rotation);
-//	}
-//
-//
-//}
-
-
 EnviromentClient::EnviromentClient()
 {
 	mSpriteComponent.reset(new SpriteComponent(this));
-	
+	mSpriteComponent->SetTexture(TextureManager::sInstance->GetTexture("short_pipe"));
+	mIsNew = true;
+
+	GameObject::Type type = getType();
+	//LOG("output: %d", type);
+	if (type == GameObject::Type::ShortPlatform)
+		mSpriteComponent->SetTexture(TextureManager::sInstance->GetTexture("short_pipe"));
+	else if (type == GameObject::Type::LongPlatform)
+		mSpriteComponent->SetTexture(TextureManager::sInstance->GetTexture("long_pipe"));
+	else if (type == GameObject::Type::SpinningSaw)
+		mSpriteComponent->SetTexture(TextureManager::sInstance->GetTexture("spinning_saw"));
+	else if (type == GameObject::Type::TitleScreen)
+	{
+		mSpriteComponent->SetTexture(TextureManager::sInstance->GetTexture("title"));
+		/*Vector3 loc = GetLocation();
+		loc.mZ = -1.f;
+		SetLocation(loc);*/
+	}
+	else if (type == GameObject::Type::Background)
+	{
+		mSpriteComponent->SetTexture(TextureManager::sInstance->GetTexture("background"));
+		/*Vector3 loc = GetLocation();
+		loc.mZ = -1.f;
+		SetLocation(loc);*/
+	}
+	else if (type == GameObject::Type::Fan)
+		mSpriteComponent->SetTexture(TextureManager::sInstance->GetTexture("fan"));
+	else
+		mSpriteComponent->SetTexture(TextureManager::sInstance->GetTexture("short_pipe"));
+}
+
+void EnviromentClient::UpdateTextures()
+{
+	//GameObject::Type type = getType();
+	////LOG("output: %d", type);
+	//if (type == GameObject::Type::ShortPlatform)
+	//	mSpriteComponent->SetTexture(TextureManager::sInstance->GetTexture("short_pipe"));
+	//else if (type == GameObject::Type::LongPlatform)
+	//	mSpriteComponent->SetTexture(TextureManager::sInstance->GetTexture("long_pipe"));
+	//else if (type == GameObject::Type::SpinningSaw)
+	//	mSpriteComponent->SetTexture(TextureManager::sInstance->GetTexture("spinning_saw"));
+	//else if (type == GameObject::Type::TitleScreen)
+	//{
+	//	mSpriteComponent->SetTexture(TextureManager::sInstance->GetTexture("title"));
+	//	/*Vector3 loc = GetLocation();
+	//	loc.mZ = -1.f;
+	//	SetLocation(loc);*/
+	//}
+	//else if (type == GameObject::Type::Background)
+	//{
+	//	mSpriteComponent->SetTexture(TextureManager::sInstance->GetTexture("background"));
+	//	/*Vector3 loc = GetLocation();
+	//	loc.mZ = -1.f;
+	//	SetLocation(loc);*/
+	//}
+	//else if (type == GameObject::Type::Fan)
+	//	mSpriteComponent->SetTexture(TextureManager::sInstance->GetTexture("fan"));
+	//else
+	//	mSpriteComponent->SetTexture(TextureManager::sInstance->GetTexture("short_pipe"));
 
 
-		mSpriteComponent->SetTexture(TextureManager::sInstance->GetTexture("pipe"));
+	//setIsNew(false);
 	
-	if(mType == Enviroment::Type::GasPipe)
-		mSpriteComponent->SetTexture(TextureManager::sInstance->GetTexture("pipe"));
+}
+
+void EnviromentClient::Update()
+{
+	if (firstRun == false)
+	{
+		GameObject::Type type = getType();
+		//LOG("output: %d", type);
+		if (type == GameObject::Type::ShortPlatform)
+			mSpriteComponent->SetTexture(TextureManager::sInstance->GetTexture("short_pipe"));
+		else if (type == GameObject::Type::LongPlatform)
+			mSpriteComponent->SetTexture(TextureManager::sInstance->GetTexture("long_pipe"));
+		else if (type == GameObject::Type::SpinningSaw)
+			mSpriteComponent->SetTexture(TextureManager::sInstance->GetTexture("spinning_saw"));
+		else if (type == GameObject::Type::TitleScreen)
+		{
+			mSpriteComponent->SetTexture(TextureManager::sInstance->GetTexture("title"));
+			/*Vector3 loc = GetLocation();
+			loc.mZ = -1.f;
+			SetLocation(loc);*/
+		}
+		else if (type == GameObject::Type::Background)
+		{
+			mSpriteComponent->SetTexture(TextureManager::sInstance->GetTexture("background"));
+			/*Vector3 loc = GetLocation();
+			loc.mZ = -1.f;
+			SetLocation(loc);*/
+		}
+		else if (type == GameObject::Type::Fan)
+			mSpriteComponent->SetTexture(TextureManager::sInstance->GetTexture("fan"));
+		else
+			mSpriteComponent->SetTexture(TextureManager::sInstance->GetTexture("short_pipe"));
+	}
+	
 }
