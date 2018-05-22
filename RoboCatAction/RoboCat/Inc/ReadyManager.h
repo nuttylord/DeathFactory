@@ -16,14 +16,12 @@ public:
 		uint32_t		GetPlayerId()	const { return mPlayerId; }
 		const string&	GetPlayerName()	const { return mPlayerName; }
 
-		bool			GetReadyState()		const { return mReadyState; }
-		void			SetReadyState(bool inReadyState);
+		bool			GetReady()		const { return mReady; }
+		void			SetReady(bool inReady);
 
 		bool			Write(OutputMemoryBitStream& inOutputStream) const;
 		bool			Read(InputMemoryBitStream& inInputStream);
 
-
-		static uint32_t	GetSerializedSize();
 
 		void SetDisplayMessage(string input) {mDisplayMessage = input; }
 		string GetDisplayMessage() { return mDisplayMessage; }
@@ -31,7 +29,7 @@ public:
 	private:
 		uint32_t mPlayerId;
 		string	mPlayerName;
-		int		mReadyState;
+		int		mReady;
 		string mDisplayMessage;
 
 	};
@@ -51,14 +49,15 @@ public:
 
 	bool	IsEveryoneReady() const { return mEveryoneReady; }
 
-	bool	IsGamePlaying() const { return mGamePlaying; }
+	bool	IsGamePlaying() const { return mPlaying; }
 	bool	IsGameFinished() const { return mGameFinished; }
+
 	void	SetEveryoneReady(bool inEveryoneReady);
-	void	SetGamePlaying(bool gamePlaying);
+	void	SetPlaying(bool playing);
 
 
 	void	StartGame();
-	void	ResetGame();
+
 
 	const vector< ReadyPlayer >&	GetEntries()	const { return mEntries; }
 
@@ -67,9 +66,7 @@ private:
 	ReadyManager();
 	vector< ReadyPlayer >	mEntries;
 
-	int mTimeToGameStart;
-	int mMatchTimer;
 	bool mEveryoneReady;
-	bool mGamePlaying;
+	bool mPlaying;
 	bool mGameFinished;
 };

@@ -76,28 +76,26 @@ void RoboCat::ProcessInput( float inDeltaTime, const InputState& inInputState )
 
 }
 
-//this  will become our jump function
+//applies acceleration, gravity and friction - DL
 void RoboCat::AdjustVelocityByThrust( float inDeltaTime )
 {
-	//just set the velocity based on the thrust direction -- no thrust will lead to 0 velocity
-	//simulating acceleration makes the client prediction a bit more complex
-
+	
 	Vector3 forwardVector = GetForwardVector(); // return Vector3( sinf( mRotation ), -cosf( mRotation ), 0.f );
 
-	//Apply acceleration
+	//Apply acceleration to forward vector
 	mVelocity = mVelocity + forwardVector * ( mThrustDir * inDeltaTime * mAcceleration );
 
-	//Subtract friction - Friction is a fraction of our acceleration in inverse direction
-	//mVelocity = mVelocity + (-1 * (mVelocity / mVelocity.Length()) * mFriction ); //vector divide operator in MathHelper...
+	//Friction vector is inverse of forward vector
+	Vector3 friction = mVelocity * -1; 
 
-	Vector3 friction = mVelocity * -1; // inverse direction of velocity
-
+	//as long as we are not stopped, normalize friction by our friction constant
 	if(friction.Length() != 0 )
-		friction = friction / mFriction; //normalize
+		friction = friction / mFriction; //normalize 
 
-	//ADD GRAVITY
+	//Apply gravity force downwards
 	mVelocity += Vector3(0, mGravity * inDeltaTime, 0);
 
+	//apply friction
 	mVelocity = mVelocity + friction;
 
 

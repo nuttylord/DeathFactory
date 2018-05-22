@@ -45,7 +45,7 @@ Server::Server()
 int Server::Run()
 {
 	SetupWorld();
-	LoadHighScore();
+	ReadHighScore();
 
 	return Engine::Run();
 }
@@ -161,6 +161,8 @@ void Server::HandleNewClient( ClientProxyPtr inClientProxy )
 		ScoreBoardManager::sInstance->IncScore(playerId, score);
 
 	SpawnCatForPlayer( playerId );
+
+
 	ReadyManager::sInstance->AddEntry(playerId, inClientProxy->GetName());
 }
 
@@ -174,7 +176,8 @@ void Server::SpawnCatForPlayer( int inPlayerId )
 
 }
 
-void Server::LoadHighScore()
+//reads in the High score from persistance.txt - DL
+void Server::ReadHighScore()
 {
 	//declare variables 
 	std::string inLine;
@@ -191,7 +194,7 @@ void Server::LoadHighScore()
 		std::string input;
 
 		//read in player name
-		getline(stream, input, (char)',');
+		getline(stream, input, (char)'-');
 		score.playerID = input;
 
 		//read in score, convert from string to int.......
@@ -200,16 +203,21 @@ void Server::LoadHighScore()
 		scoreList.push_back(score);
 	}
 
+	//remember to close
 	file.close();
 
 
 }
 
+//update high score
 void Server::UpdateHighScore()
 {
 	bool updated;
+
+	//loop through score board entries
 	for (ScoreBoardManager::Entry instance : ScoreBoardManager::sInstance->GetEntries()) {
 
+		//for each instance, update any existing scores
 		updated = UpdateExistingHighScore(instance);
 
 		//if we didn't find a matching score, make a new one
@@ -220,6 +228,8 @@ void Server::UpdateHighScore()
 			newScore.playerID = instance.GetPlayerName();
 
 			newScore.playerScore = instance.GetScore();
+
+			scoreList.push_back(newScore);
 
 		}
 	}
@@ -243,7 +253,8 @@ bool Server::UpdateExistingHighScore(ScoreBoardManager::Entry inScore)
 	return false;
 }
 
-void Server::SaveHighScores()
+//writes the high scores to file
+void Server::WriteHighScores()
 {
 	//make sure our scores are up to date before saving
 	UpdateHighScore();
@@ -289,7 +300,7 @@ void Server::HandleLostClient( ClientProxyPtr inClientProxy )
 	}
 
 	UpdateHighScore();
-	SaveHighScores();
+	WriteHighScores();
 }
 
 RoboCatPtr Server::GetCatForPlayer( int inPlayerId )
