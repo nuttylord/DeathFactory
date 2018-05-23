@@ -15,19 +15,31 @@ RoboCat::RoboCat() :
 	mPlayerId( 0 ),
 	mIsShooting( false ),
 	mHealth( 10 ),
-	mAcceleration(8), //new
 	mFriction(30), //new - higher value means lower friction
 	mGravity(3.f),
 	mJumpStrength(10.f)
+	mAcceleration(8), //player applies acceleration to velocity - DL
+	mFriction(40), //higher value means lower friction
+	mGravity(7.f), // constant force applied downlwards
+	mJumpStrength(200.f), // the force applied when jumping
+	mJumpTimer(450.f) // time between jumps
 {
 	SetCollisionRadius( .25f );
 	setType(GameObject::Type::PlayerCharacter);
 }
 
+// Process input...  - DL
 void RoboCat::ProcessInput( float inDeltaTime, const InputState& inInputState )
 {
 	//process our input....
 	if (ReadyManager::sInstance->IsGamePlaying()) {
+		//turning...
+		float newRotation = GetRotation() + inInputState.GetDesiredHorizontalDelta() * mMaxRotationSpeed * inDeltaTime;
+		//SetRotation( newRotation );
+
+	//Wait for ReadyManager 
+	if (ReadyManager::sInstance->IsGamePlaying()) {
+
 		//turning...
 		float newRotation = GetRotation() + inInputState.GetDesiredHorizontalDelta() * mMaxRotationSpeed * inDeltaTime;
 		//SetRotation( newRotation );
@@ -53,6 +65,18 @@ void RoboCat::ProcessInput( float inDeltaTime, const InputState& inInputState )
 		if (inInputState.GetDesiredVerticalDelta() > 0)
 		{
 			mVelocity += Vector3(0, -mJumpStrength * inDeltaTime, 0);
+		//if Vertical delta is > 1 then we want to jump.
+		if (inInputState.GetDesiredVerticalDelta() > 0)
+		{
+			//if we're not jumping && off cooldown, we are now!!
+			if (!mIsJumping && mJumpCounter < 0) {
+
+				mIsJumping = true; 
+				Jump(inDeltaTime); //Jump!!
+				mJumpCounter = mJumpTimer; // set on cooldown
+
+			}
+			
 		}
 
 		//moving...
@@ -65,28 +89,26 @@ void RoboCat::ProcessInput( float inDeltaTime, const InputState& inInputState )
 
 }
 
-//this  will become our jump function
+//applies acceleration, gravity and friction - DL
 void RoboCat::AdjustVelocityByThrust( float inDeltaTime )
 {
-	//just set the velocity based on the thrust direction -- no thrust will lead to 0 velocity
-	//simulating acceleration makes the client prediction a bit more complex
-
+	
 	Vector3 forwardVector = GetForwardVector(); // return Vector3( sinf( mRotation ), -cosf( mRotation ), 0.f );
 
-	//Apply acceleration
+	//Apply acceleration to forward vector
 	mVelocity = mVelocity + forwardVector * ( mThrustDir * inDeltaTime * mAcceleration );
 
-	//Subtract friction - Friction is a fraction of our acceleration in inverse direction
-	//mVelocity = mVelocity + (-1 * (mVelocity / mVelocity.Length()) * mFriction ); //vector divide operator in MathHelper...
+	//Friction vector is inverse of forward vector
+	Vector3 friction = mVelocity * -1; 
 
-	Vector3 friction = mVelocity * -1; // inverse direction of velocity
-
+	//as long as we are not stopped, normalize friction by our friction constant
 	if(friction.Length() != 0 )
-		friction = friction / mFriction; //normalize
+		friction = friction / mFriction; //normalize 
 
-	//ADD GRAVITY
+	//Apply gravity force downwards
 	mVelocity += Vector3(0, mGravity * inDeltaTime, 0);
 
+	//apply friction
 	mVelocity = mVelocity + friction;
 
 
@@ -102,15 +124,14 @@ void RoboCat::AdjustVelocityByThrust( float inDeltaTime )
 void RoboCat::SimulateMovement( float inDeltaTime )
 {
 	if (ReadyManager::sInstance->IsGamePlaying()) {
-
 		//simulate us...
+		
 		AdjustVelocityByThrust(inDeltaTime);
 
 
 		SetLocation(GetLocation() + mVelocity * inDeltaTime);
 
 		ProcessCollisions();
-
 	}
 }
 
@@ -118,6 +139,8 @@ void RoboCat::Update()
 {
 	//if (!ReadyManager::sInstance->IsGamePlaying())
 		//SetLocation(Vector3(0, 0, 0));
+
+	DecrementJumpTimer();
 }
 
 void RoboCat::ProcessCollisions()
@@ -269,6 +292,29 @@ uint32_t RoboCat::Write( OutputMemoryBitStream& inOutputStream, uint32_t inDirty
 	return writtenState;
 	
 
+}
+
+//Accelerates the player verticaly - DL
+void RoboCat::Jump(float inDeltaTime)
+{
+	mVelocity += Vector3(0, -mJumpStrength * inDeltaTime, 0);
+}
+
+
+//if we're jumping and timer has not been reset yet, tick it down. - DL
+void RoboCat::DecrementJumpTimer()
+{
+	
+	if (mIsJumping)
+	{
+		mJumpCounter--;
+	}
+
+	if (mJumpCounter < 0)
+	{
+		//jump off cooldown
+		mIsJumping = false;
+	}
 }
 
 

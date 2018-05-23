@@ -18,6 +18,8 @@ public:
 
 		bool			GetReadyState()		const { return mReadyState; }
 		void			SetReadyState(bool inReadyState);
+		bool			GetReady()		const { return mReady; }
+		void			SetReady(bool inReady);
 
 		bool			Write(OutputMemoryBitStream& inOutputStream) const;
 		bool			Read(InputMemoryBitStream& inInputStream);
@@ -32,6 +34,7 @@ public:
 		uint32_t mPlayerId;
 		string	mPlayerName;
 		int		mReadyState;
+		int		mReady;
 		string mDisplayMessage;
 
 	};
@@ -53,12 +56,17 @@ public:
 
 	bool	IsGamePlaying() const { return mGamePlaying; }
 	bool	IsGameFinished() const { return mGameFinished; }
-	void	SetEveryoneReady(bool inEveryoneReady);
-	void	SetGamePlaying(bool gamePlaying);
 
 
 	void	StartGame();
 	void	ResetGame();
+
+	void	SetEveryoneReady(bool inEveryoneReady);
+	void	SetPlaying(bool playing);
+
+
+	void	StartGame();
+
 
 	const vector< ReadyPlayer >&	GetEntries()	const { return mEntries; }
 
@@ -71,5 +79,7 @@ private:
 	int mMatchTimer;
 	bool mEveryoneReady;
 	bool mGamePlaying;
+	bool mEveryoneReady;
+	bool mPlaying;
 	bool mGameFinished;
 };
