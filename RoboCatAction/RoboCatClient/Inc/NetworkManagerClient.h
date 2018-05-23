@@ -32,7 +32,7 @@ private:
 
 			void	HandleWelcomePacket( InputMemoryBitStream& inInputStream );
 			void	HandleStatePacket( InputMemoryBitStream& inInputStream );
-			void HandleReadyState(InputMemoryBitStream & inInputStream);
+			//void HandleReadyState(InputMemoryBitStream & inInputStream);
 			void	ReadLastMoveProcessedOnServerTimestamp( InputMemoryBitStream& inInputStream );
 
 			// new functions

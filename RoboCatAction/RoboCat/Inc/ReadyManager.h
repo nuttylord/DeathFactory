@@ -58,7 +58,7 @@ public:
 	bool	IsGameFinished() const { return mGameFinished; }
 
 
-	void	StartGame();
+	//void	StartGame();
 	void	ResetGame();
 
 	void	SetEveryoneReady(bool inEveryoneReady);
@@ -79,7 +79,7 @@ private:
 	int mMatchTimer;
 	bool mEveryoneReady;
 	bool mGamePlaying;
-	bool mEveryoneReady;
+	//bool mEveryoneReady;
 	bool mPlaying;
 	bool mGameFinished;
 };

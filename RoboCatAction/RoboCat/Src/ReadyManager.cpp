@@ -111,7 +111,6 @@ void ReadyManager::ChangeReadyState(uint32_t inPlayerId, bool inReady)
 //checks if the game is ready to start, if so sets everyone ready
 void ReadyManager::CheckPlayerCount()
 {
-<<<<<<< HEAD
 	if (mGamePlaying)
 	{
 		for (ReadyPlayer& entry : mEntries)
