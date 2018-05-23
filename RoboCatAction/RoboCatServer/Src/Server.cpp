@@ -223,11 +223,11 @@ void Server::ReadHighScore()
 		std::string input;
 
 		//read in player name
-		getline(stream, input, (char)',');
+		getline(stream, input, (char)'-');
 		score.playerID = input;
 
 		//read in score, convert from string to int.......
-		getline(stream, input, (char)',');
+		getline(stream, input, (char)'-');
 		score.playerScore = stoi(input); // string to int
 		scoreList.push_back(score);
 	}
@@ -261,12 +261,13 @@ void Server::UpdateHighScore()
 bool Server::UpdateExistingHighScore(ScoreBoardManager::Entry inScore)
 {
 	//Loop though all of our existing scores
-	for (Score scoreIterator : scoreList) {
+	for (Score& scoreIterator : scoreList) {
 
 		//if we find a matching player name
 		if (inScore.GetPlayerName() == scoreIterator.playerID)
 		{
 			scoreIterator.playerScore = inScore.GetScore(); // set the score
+
 			return true; //updated
 		}
 	}
@@ -285,7 +286,7 @@ void Server::WriteHighScores()
 
 	for (Score scoreIterator : scoreList) {
 
-		save << scoreIterator.playerID << ',' << scoreIterator.playerScore;
+		save << scoreIterator.playerID << '-' << scoreIterator.playerScore;
 		save << '\n';
 
 	}
@@ -309,6 +310,9 @@ int Server::getPlayerScore(std::string name)
 
 void Server::HandleLostClient( ClientProxyPtr inClientProxy )
 {
+	UpdateHighScore();
+	WriteHighScores();
+
 	//kill client's cat
 	//remove client from scoreboard
 	int playerId = inClientProxy->GetPlayerId();
@@ -320,8 +324,7 @@ void Server::HandleLostClient( ClientProxyPtr inClientProxy )
 		cat->SetDoesWantToDie( true );
 	}
 
-	UpdateHighScore();
-	WriteHighScores();
+
 }
 
 RoboCatPtr Server::GetCatForPlayer( int inPlayerId )
