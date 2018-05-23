@@ -37,7 +37,7 @@ void HUD::Render()
 void HUD::RenderDisplayMessage() {
 
 	//get all players
-	vector<ReadyManager::ReadyPlayer> players = ReadyManager::sInstance->GetEntries();
+	vector<ReadyPlayer> players = ReadyManager::sInstance->GetEntries();
 
 	
 

@@ -15,15 +15,16 @@ RoboCat::RoboCat() :
 	mPlayerId( 0 ),
 	mIsShooting( false ),
 	mHealth( 10 ),
-	mFriction(30), //new - higher value means lower friction
-	mGravity(3.f),
-	mJumpStrength(10.f)
-	mAcceleration(8), //player applies acceleration to velocity - DL
-	mFriction(40), //higher value means lower friction
+	//mFriction(30), //new - higher value means lower friction
+	//mGravity(3.f),
+	//mJumpStrength(10.f),
+	mAcceleration(8.f), //player applies acceleration to velocity - DL
+	mFriction(40.f), //higher value means lower friction
 	mGravity(7.f), // constant force applied downlwards
 	mJumpStrength(200.f), // the force applied when jumping
 	mJumpTimer(450.f) // time between jumps
 {
+	
 	SetCollisionRadius( .25f );
 	setType(GameObject::Type::PlayerCharacter);
 }
@@ -36,6 +37,7 @@ void RoboCat::ProcessInput( float inDeltaTime, const InputState& inInputState )
 		//turning...
 		float newRotation = GetRotation() + inInputState.GetDesiredHorizontalDelta() * mMaxRotationSpeed * inDeltaTime;
 		//SetRotation( newRotation );
+	}
 
 	//Wait for ReadyManager 
 	if (ReadyManager::sInstance->IsGamePlaying()) {
@@ -65,26 +67,27 @@ void RoboCat::ProcessInput( float inDeltaTime, const InputState& inInputState )
 		if (inInputState.GetDesiredVerticalDelta() > 0)
 		{
 			mVelocity += Vector3(0, -mJumpStrength * inDeltaTime, 0);
-		//if Vertical delta is > 1 then we want to jump.
-		if (inInputState.GetDesiredVerticalDelta() > 0)
-		{
-			//if we're not jumping && off cooldown, we are now!!
-			if (!mIsJumping && mJumpCounter < 0) {
+			//if Vertical delta is > 1 then we want to jump.
+			if (inInputState.GetDesiredVerticalDelta() > 0)
+			{
+				//if we're not jumping && off cooldown, we are now!!
+				if (!mIsJumping && mJumpCounter < 0) {
 
-				mIsJumping = true; 
-				Jump(inDeltaTime); //Jump!!
-				mJumpCounter = mJumpTimer; // set on cooldown
+					mIsJumping = true;
+					Jump(inDeltaTime); //Jump!!
+					mJumpCounter = mJumpTimer; // set on cooldown
+
+				}
 
 			}
-			
+
+			//moving...
+			//float inputForwardDelta = inInputState.GetDesiredHorizontalDelta();
+			//mThrustDir = inputForwardDelta;
+
+
+			mIsShooting = inInputState.IsShooting();
 		}
-
-		//moving...
-		//float inputForwardDelta = inInputState.GetDesiredHorizontalDelta();
-		//mThrustDir = inputForwardDelta;
-
-
-		mIsShooting = inInputState.IsShooting();
 	}
 
 }
@@ -148,26 +151,7 @@ void RoboCat::ProcessCollisions()
 	//right now just bounce off the sides..
 	ProcessCollisionsWithScreenWalls();
 
-	//float sourceRadius = GetCollisionRadius();
-	//Vector3 sourceLocation = GetLocation();
-	// TL - to use a quadtree, we use sets. 
-	//std::set<GameObject*> collisionSet;
-
-	//now let's iterate through the world and see what we hit...
-	//note: since there's a small number of objects in our game, this is fine.
-	//but in a real game, brute-force checking collisions against every other object is not efficient.
-	//it would be preferable to use a quad tree or some other structure to minimize the
-	//number of collisions that need to be tested.
-	
-	// TL - Realised quickly that this needs to be in server.cpp
-	//for (auto goIt = World::sInstance->GetGameObjects().begin(), end = World::sInstance->GetGameObjects().end(); goIt != end; ++goIt)
-	//{
-	//	GameObject* target = goIt->get();
-	//	
-	//	// TL - so the first aim is to make a set of all the collidable objects in the scene. 
-	//	//target.
-	//}
-	//s
+	// the rest happens on the server
 
 }
 
@@ -211,7 +195,7 @@ void RoboCat::ProcessCollisionsWithScreenWalls()
 }
 
 uint32_t RoboCat::Write( OutputMemoryBitStream& inOutputStream, uint32_t inDirtyState ) const
-{
+{ 
 	uint32_t writtenState = 0;
 
 	if( inDirtyState & ECRS_PlayerId )

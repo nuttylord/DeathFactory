@@ -16,42 +16,12 @@ ReadyManager::ReadyManager() :
 
 }
 
-ReadyManager::ReadyPlayer::ReadyPlayer(uint32_t inPlayerId, const string& inPlayerName, bool ready) :
-	mPlayerId(inPlayerId),
-	mPlayerName(inPlayerName)
-{
-	//set to false when we first make the player
-	SetReadyState(ready);
-}
 
-//changes ready state and will update a displayed message to be added later on
-void ReadyManager::ReadyPlayer::SetReadyState(bool inReadyState)
-{
-	mReadyState = inReadyState;
-
-}
-
-
-
-ReadyManager::ReadyPlayer::ReadyPlayer(uint32_t PlayerId, const string& PlayerName, bool ready) :
-	mPlayerId(PlayerId),
-	mPlayerName(PlayerName)
-{
-	//set to false when we first make the player
-	SetReady(ready);
-}
-
-//changes ready state and handles removing the display message
-void ReadyManager::ReadyPlayer::SetReady(bool inReady)
-{
-	mReady = inReady;
-
-}
 
 //pass in player ID, returns a pointer to the player
-ReadyManager::ReadyPlayer* ReadyManager::GetEntry(uint32_t inPlayerId)
+ReadyPlayer* ReadyManager::GetEntry(uint32_t inPlayerId)
 {
-	for (ReadyPlayer &entry : mEntries)
+	for (ReadyPlayer& entry : mEntries)
 	{
 		if (entry.GetPlayerId() == inPlayerId)
 		{
@@ -82,13 +52,10 @@ bool ReadyManager::RemoveEntry(uint32_t inPlayerId)
 	return false;
 }
 
-void ReadyManager::AddEntry(uint32_t inPlayerId, const string& inPlayerName)
-{
 	//if this player id exists already, remove it first- it would be crazy to have two of the same id
 //Add player to the manager
 void ReadyManager::AddEntry(uint32_t inPlayerId, const string& inPlayerName)
 {
-
 	RemoveEntry(inPlayerId);
 
 	mEntries.emplace_back(inPlayerId, inPlayerName, true);
@@ -103,7 +70,7 @@ void ReadyManager::ChangeReadyState(uint32_t inPlayerId, bool inReady)
 	ReadyPlayer* entry = GetEntry(inPlayerId);
 	if (entry)
 	{
-		entry->SetReadyState(inReady);
+		//entry->SetReadyState(inReady);
 		entry->SetReady(inReady);
 	}
 }
@@ -164,7 +131,7 @@ bool ReadyManager::AllReady() {
 
 	//loop through every player, if we find one not ready return false
 	for (ReadyPlayer player : mEntries) {
-		if (!player.GetReadyState())
+		if (!player.GetReady())
 			return false;
 	}
 
@@ -204,7 +171,7 @@ bool ReadyManager::Read(InputMemoryBitStream& inInputStream)
 
 	bool gamePlaying;
 	inInputStream.Read(gamePlaying);
-	SetGamePlaying(gamePlaying);
+	SetPlaying(gamePlaying);
 	bool Playing;
 	inInputStream.Read(Playing);
 
@@ -219,9 +186,6 @@ void ReadyManager::SetEveryoneReady(bool inEveryoneReady)
 	mEveryoneReady = inEveryoneReady;
 }
 
-void ReadyManager::SetGamePlaying(bool gamePlaying)
-{
-	mGamePlaying = gamePlaying;
 //called when the game starts, allows players to move once set
 void ReadyManager::SetPlaying(bool Playing)
 {
@@ -235,39 +199,6 @@ void ReadyManager::StartGame()
 	mGamePlaying = true;
 	mPlaying = true;
 	CheckPlayerCount();
-}
-
-
-bool ReadyManager::ReadyPlayer::Write(OutputMemoryBitStream& inOutputStream) const
-{
-	bool didSucceed = true;
-
-	inOutputStream.Write(mPlayerId);
-	inOutputStream.Write(mPlayerName);
-	inOutputStream.Write(mReadyState);
-	inOutputStream.Write(mReady);
-	inOutputStream.Write(mDisplayMessage);
-
-	return didSucceed;
-}
-
-bool ReadyManager::ReadyPlayer::Read(InputMemoryBitStream& inInputStream)
-{
-	bool didSucceed = true;
-
-	inInputStream.Read(mPlayerId);
-	inInputStream.Read(mPlayerName);
-	int readyState;
-	inInputStream.Read(readyState);
-
-	if (didSucceed) {
-		SetReadyState(readyState);
-		SetReady(readyState);
-	}
-
-	inInputStream.Read(mDisplayMessage);
-
-	return didSucceed;
 }
 
 

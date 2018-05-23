@@ -164,6 +164,7 @@ void NetworkManagerClient::HandleStatePacket( InputMemoryBitStream& inInputStrea
 	if( mState == NCS_Welcomed )
 	{
 		ReadLastMoveProcessedOnServerTimestamp( inInputStream );
+
 		//handle our ReadyUpManager
 		HandleReadyState(inInputStream);
 
@@ -173,14 +174,17 @@ void NetworkManagerClient::HandleStatePacket( InputMemoryBitStream& inInputStrea
 		HandleScoreBoardState( inInputStream );
 
 		// check if the number of objects on server matches the number of objects on client.
-		size_t serverWorldSize; // make world size check tiny.
-		inInputStream.Read(serverWorldSize);
+		//size_t serverWorldSize; // make world size check tiny.
+		//inInputStream.Read(serverWorldSize);
 
-		// handle the environment state (this shall only update once at start).
+		// handle the environment state (this is now spawned by the client).
 		//HandleEnvironmentState(inInputStream);
 
 		//LOG("i am client %d and i have %d objects", mPlayerId, serverWorldSize);
 
+		// this was originally intended to be somewhere that we check for de-synced world sizes. 
+		// this however was causing some serious issues with packets and sending a sync packet was 
+		// being handled for the most part by replicationManager. 
 		// check you have all the objects. 
 		/*if (!(serverWorldSize == World::sInstance->getCollisionSetNum()))
 			SendSyncPacket();*/
@@ -264,7 +268,7 @@ void NetworkManagerClient::HandleCollisionState(InputMemoryBitStream& inInputStr
 	//copy the mNetworkIdToGameObjectMap so that anything that doesn't get an updated can be destroyed...
 	//IntToGameObjectMap	objectsToDestroy = mNetworkIdToGameObjectMap;
 
-	int stateCount;
+	uint16_t stateCount; // might be more than 255 objects on whole server. 
 	inInputStream.Read(stateCount);
 	if (stateCount > 0)
 	{

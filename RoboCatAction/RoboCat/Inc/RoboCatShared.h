@@ -77,6 +77,7 @@ class GameObject;
 #include "InputState.h"
 #include "Move.h"
 #include "MoveList.h"
+#include "ReadyPlayer.h"
 
 #include "GameObject.h"
 #include "GameObjectRegistry.h"
@@ -89,6 +90,7 @@ class GameObject;
 #include "ScoreBoardManager.h"
 #include "Enviroment.h"
 #include "ReadyManager.h"
+
 
 #include "WeightedTimedMovingAverage.h"
 #include "ReplicationCommand.h"
