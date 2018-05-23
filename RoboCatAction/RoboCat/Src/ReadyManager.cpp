@@ -148,6 +148,8 @@ bool ReadyManager::Write(OutputMemoryBitStream& inOutputStream) const
 {
 	int entryCount = mEntries.size();
 
+	//we don't know our player names, so it's hard to check for remaining space in the packet...
+	//not really a concern now though
 	inOutputStream.Write(entryCount);
 	for (const ReadyPlayer& entry : mEntries)
 	{

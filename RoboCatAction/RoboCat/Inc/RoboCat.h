@@ -59,7 +59,6 @@ private:
 	Vector3				mVelocity;
 	float				mAcceleration;
 
-
 	float				mMaxLinearSpeed;
 	float				mMaxRotationSpeed;
 
@@ -93,7 +92,6 @@ protected:
 
 	bool				mIsShooting;
 
-	float getAcceleration() { return mAcceleration; }
 	
 
 

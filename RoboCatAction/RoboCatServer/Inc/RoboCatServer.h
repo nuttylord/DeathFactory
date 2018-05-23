@@ -12,8 +12,6 @@ public:
 
 	virtual void Update();
 
-	float GetDistance(GameObjectPtr target);
-
 	void SetCatControlType( ECatControlType inCatControlType ) { mCatControlType = inCatControlType; }
 
 	void TakeDamage( int inDamagingPlayerId );

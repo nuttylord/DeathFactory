@@ -83,15 +83,13 @@ namespace
 	// creates the environment
 	void CreateEnviroment()
 	{
-
-
-
 		//make a mouse somewhere- where will these come from?
-		for (float i = 0; i < 3; i++)
+		for (float i = 0; i < 10; i++)
 		{
-			RoboCatPtr bot = std::static_pointer_cast< RoboCat >(GameObjectRegistry::sInstance->CreateGameObject('RCAT'));
-			bot->SetLocation(Vector3(i, 2, 0));
-		
+			//EnviromentPtr make = std::static_pointer_cast< Enviroment >(GameObjectRegistry::sInstance->CreateGameObject('ENVT'));
+			//make->SetLocation(Vector3((i*0.6f) -6, 2, 0));
+			//make->setType(GameObject::Type::GasPipe);
+			//make->SetScale(1);
 		}
 	}
 }
@@ -200,7 +198,7 @@ void Server::ReadHighScore()
 		score.playerID = input;
 
 		//read in score, convert from string to int.......
-		getline(stream, input, (char)'-');
+		getline(stream, input, (char)',');
 		score.playerScore = stoi(input); // string to int
 		scoreList.push_back(score);
 	}
@@ -211,7 +209,7 @@ void Server::ReadHighScore()
 
 }
 
-//update high scores
+//update high score
 void Server::UpdateHighScore()
 {
 	bool updated;
@@ -266,7 +264,7 @@ void Server::WriteHighScores()
 
 	for (Score scoreIterator : scoreList) {
 
-		save << scoreIterator.playerID << '-' << scoreIterator.playerScore;
+		save << scoreIterator.playerID << ',' << scoreIterator.playerScore;
 		save << '\n';
 
 	}
@@ -290,9 +288,6 @@ int Server::getPlayerScore(std::string name)
 
 void Server::HandleLostClient( ClientProxyPtr inClientProxy )
 {
-
-	UpdateHighScore();
-	WriteHighScores();
 	//kill client's cat
 	//remove client from scoreboard
 	int playerId = inClientProxy->GetPlayerId();
@@ -304,7 +299,8 @@ void Server::HandleLostClient( ClientProxyPtr inClientProxy )
 		cat->SetDoesWantToDie( true );
 	}
 
-
+	UpdateHighScore();
+	WriteHighScores();
 }
 
 RoboCatPtr Server::GetCatForPlayer( int inPlayerId )
