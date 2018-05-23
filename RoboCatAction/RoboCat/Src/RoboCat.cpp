@@ -19,7 +19,7 @@ RoboCat::RoboCat() :
 	//mGravity(3.f),
 	//mJumpStrength(10.f),
 	mAcceleration(8.f), //player applies acceleration to velocity - DL
-	mFriction(40.f), //higher value means lower friction
+	mFriction(30.f), //higher value means lower friction
 	mGravity(7.f), // constant force applied downlwards
 	mJumpStrength(200.f), // the force applied when jumping
 	mJumpTimer(450.f) // time between jumps
@@ -33,14 +33,14 @@ RoboCat::RoboCat() :
 void RoboCat::ProcessInput( float inDeltaTime, const InputState& inInputState )
 {
 	//process our input....
-	if (ReadyManager::sInstance->IsGamePlaying()) {
+	if (ReadyManager::sInstance->IsPlaying()) {
 		//turning...
 		float newRotation = GetRotation() + inInputState.GetDesiredHorizontalDelta() * mMaxRotationSpeed * inDeltaTime;
 		//SetRotation( newRotation );
 	}
 
 	//Wait for ReadyManager 
-	if (ReadyManager::sInstance->IsGamePlaying()) {
+	if (ReadyManager::sInstance->IsPlaying()) {
 
 		//turning...
 		float newRotation = GetRotation() + inInputState.GetDesiredHorizontalDelta() * mMaxRotationSpeed * inDeltaTime;
@@ -66,7 +66,6 @@ void RoboCat::ProcessInput( float inDeltaTime, const InputState& inInputState )
 
 		if (inInputState.GetDesiredVerticalDelta() > 0)
 		{
-			mVelocity += Vector3(0, -mJumpStrength * inDeltaTime, 0);
 			//if Vertical delta is > 1 then we want to jump.
 			if (inInputState.GetDesiredVerticalDelta() > 0)
 			{
@@ -116,17 +115,18 @@ void RoboCat::AdjustVelocityByThrust( float inDeltaTime )
 
 
 
-	//check not exceeding max speed
+	/*check not exceeding max speed
 	if (mVelocity.Length() > mMaxLinearSpeed) {
 		
 		mVelocity.mX = (mVelocity.mX / mVelocity.Length()) * mMaxLinearSpeed;
 		mVelocity.mY = (mVelocity.mY / mVelocity.Length()) * mMaxLinearSpeed;
 	}
+	*/
 }
 
 void RoboCat::SimulateMovement( float inDeltaTime )
 {
-	if (ReadyManager::sInstance->IsGamePlaying()) {
+	if (ReadyManager::sInstance->IsPlaying()) {
 		//simulate us...
 		
 		AdjustVelocityByThrust(inDeltaTime);

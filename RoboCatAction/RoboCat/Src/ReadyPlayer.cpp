@@ -4,12 +4,11 @@ bool ReadyPlayer::Write(OutputMemoryBitStream& inOutputStream) const
 {
 	bool didSucceed = true;
 
-	inOutputStream.Write(mPlayerId);
-	// how do we make sure the string is read out properly with varying size?
-	inOutputStream.Write(mPlayerName); 
-	inOutputStream.Write(mReadyState);
-	inOutputStream.Write(mReady);
-	inOutputStream.Write(mDisplayMessage);
+	inOutputStream.Write(mPlayerId); // 1st
+
+	inOutputStream.Write(mPlayerName); //2nd
+	inOutputStream.Write(mReady); //3rd
+	inOutputStream.Write(mDisplayMessage); //4th
 
 	return didSucceed;
 }
@@ -18,17 +17,16 @@ bool ReadyPlayer::Read(InputMemoryBitStream& inInputStream)
 {
 	bool didSucceed = true;
 
-	inInputStream.Read(mPlayerId);
-	inInputStream.Read(mPlayerName);
-	int readyState; // could this be a bool (8 bit) instead of int ? (32 bit) 
-	inInputStream.Read(readyState);
+	inInputStream.Read(mPlayerId); //1st
+	inInputStream.Read(mPlayerName); //2nd
+	int readyState; 
+	inInputStream.Read(readyState); //3rd
 
 	if (didSucceed) {
-		//SetReadyState(readyState);
 		SetReady(readyState);
 	}
 
-	inInputStream.Read(mDisplayMessage);
+	inInputStream.Read(mDisplayMessage); //4th
 
 	return didSucceed;
 }
@@ -55,7 +53,7 @@ ReadyPlayer::ReadyPlayer(uint32_t PlayerId, const string& PlayerName, bool ready
 	mPlayerId(PlayerId),
 	mPlayerName(PlayerName)
 {
-	//set to false when we first make the player
+	
 	SetReady(ready);
 }
 

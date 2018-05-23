@@ -45,7 +45,7 @@ Server::Server()
 int Server::Run()
 {
 	SetupWorld();
-	LoadHighScore();
+	ReadHighScore();
 
 	return Engine::Run();
 }
@@ -139,7 +139,7 @@ void Server::SetupWorld()
 void Server::DoFrame()
 {
 	
-	if (ReadyManager::sInstance->IsGamePlaying()) {
+	if (ReadyManager::sInstance->IsPlaying()) {
 		//allowPlayers to move
 	}
 	else if (ReadyManager::sInstance->IsEveryoneReady())
@@ -192,7 +192,7 @@ void Server::SpawnCatForPlayer( int inPlayerId )
 
 }
 
-void Server::LoadHighScore()
+void Server::ReadHighScore()
 {
 	//declare variables 
 	std::string inLine;
@@ -261,7 +261,7 @@ bool Server::UpdateExistingHighScore(ScoreBoardManager::Entry inScore)
 	return false;
 }
 
-void Server::SaveHighScores()
+void Server::WriteHighScores()
 {
 	//make sure our scores are up to date before saving
 	UpdateHighScore();
@@ -307,7 +307,7 @@ void Server::HandleLostClient( ClientProxyPtr inClientProxy )
 	}
 
 	UpdateHighScore();
-	SaveHighScores();
+	WriteHighScores();
 }
 
 RoboCatPtr Server::GetCatForPlayer( int inPlayerId )

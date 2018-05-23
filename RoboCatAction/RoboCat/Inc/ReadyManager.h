@@ -27,8 +27,8 @@ public:
 
 	bool	IsEveryoneReady() const { return mEveryoneReady; }
 
-	bool	IsGamePlaying() const { return mGamePlaying; }
-	bool	IsGameFinished() const { return mGameFinished; }
+	bool	IsPlaying() const { return mPlaying; }
+
 
 
 	//void	StartGame();
@@ -48,12 +48,8 @@ private:
 	ReadyManager();
 	vector< ReadyPlayer >	mEntries;
 
-	int mTimeToGameStart;
-	int mMatchTimer;
 	bool mEveryoneReady;
-	bool mGamePlaying;
 
-	//bool mEveryoneReady;
 	bool mPlaying;
 	bool mGameFinished;
 };

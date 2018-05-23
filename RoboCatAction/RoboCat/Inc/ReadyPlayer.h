@@ -11,6 +11,7 @@ public:
 
 	//bool			GetReadyState()		const { return mReadyState; }
 	//void			SetReadyState(bool inReadyState);
+
 	bool			GetReady()		const { return mReady; }
 	void			SetReady(bool inReady);
 
@@ -18,7 +19,6 @@ public:
 	bool			Read(InputMemoryBitStream& inInputStream);
 
 
-	static uint32_t	GetSerializedSize();
 
 	void SetDisplayMessage(string input) { mDisplayMessage = input; }
 	string GetDisplayMessage() { return mDisplayMessage; }
@@ -26,7 +26,7 @@ public:
 private:
 	uint32_t mPlayerId;
 	string	mPlayerName;
-	int		mReadyState;
+
 	int		mReady;
 	string mDisplayMessage;
 

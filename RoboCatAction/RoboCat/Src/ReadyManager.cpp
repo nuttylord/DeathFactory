@@ -10,7 +10,7 @@ void ReadyManager::StaticInit()
 
 ReadyManager::ReadyManager() :
 	mEveryoneReady(false),
-	mGamePlaying(false),
+	mPlaying(false),
 	mGameFinished(false)
 {
 
@@ -78,7 +78,7 @@ void ReadyManager::ChangeReadyState(uint32_t inPlayerId, bool inReady)
 //checks if the game is ready to start, if so sets everyone ready
 void ReadyManager::CheckPlayerCount()
 {
-	if (mGamePlaying)
+	if (mPlaying)
 	{
 		for (ReadyPlayer& entry : mEntries)
 		{
@@ -144,16 +144,15 @@ bool ReadyManager::Write(OutputMemoryBitStream& inOutputStream) const
 {
 	int entryCount = mEntries.size();
 
-	//we don't know our player names, so it's hard to check for remaining space in the packet...
-	//not really a concern now though
-	inOutputStream.Write(entryCount);
+	inOutputStream.Write(entryCount); //1st
+
 	for (const ReadyPlayer& entry : mEntries)
 	{
-		entry.Write(inOutputStream);
+		entry.Write(inOutputStream); //nth + 1
 	}
 
-	inOutputStream.Write(mGamePlaying);
-	inOutputStream.Write(mPlaying);
+	inOutputStream.Write(mPlaying); // last
+
 
 	return true;
 }
@@ -161,19 +160,18 @@ bool ReadyManager::Write(OutputMemoryBitStream& inOutputStream) const
 bool ReadyManager::Read(InputMemoryBitStream& inInputStream)
 {
 	int entryCount;
-	inInputStream.Read(entryCount);
-	//just replace everything that's here, it don't matter...
+	
+	inInputStream.Read(entryCount); //1st
+	
+
 	mEntries.resize(entryCount);
 	for (ReadyPlayer& entry : mEntries)
 	{
-		entry.Read(inInputStream);
+		entry.Read(inInputStream); //nth +1
 	}
 
-	bool gamePlaying;
-	inInputStream.Read(gamePlaying);
-	SetPlaying(gamePlaying);
 	bool Playing;
-	inInputStream.Read(Playing);
+	inInputStream.Read(Playing); //last
 
 	SetPlaying(Playing);
 
@@ -196,7 +194,7 @@ void ReadyManager::SetPlaying(bool Playing)
 void ReadyManager::StartGame()
 {
 	//read scores from file
-	mGamePlaying = true;
+	mPlaying = true;
 	mPlaying = true;
 	CheckPlayerCount();
 }
