@@ -93,6 +93,7 @@ namespace
 		make->setType(GameObject::Type::Background);*/
 		//make->SetIsDirty(true);
 		
+		//TL
 		loc.mY = 1;
 		for (float i = -2.5f; i < 3; i++)
 		{
@@ -124,6 +125,19 @@ namespace
 			make = GameObjectRegistry::sInstance->CreateGameObject('ENVT');
 			make->setType(GameObject::Type::LongPlatform);
 			make->SetLocation(loc);
+		}
+
+
+
+		//Add some AI's -DL
+		RoboCatPtr cat;
+		for (int i = 0; i < 2; i++) 
+		{
+			cat = std::static_pointer_cast<RoboCat>(GameObjectRegistry::sInstance->CreateGameObject('RCAT'));
+			cat->SetLocation(Vector3(i*3, 0, 0));
+			cat->SetColor(Vector3(255, 1, 1));
+
+
 		}
 	}
 }

@@ -56,6 +56,7 @@ public:
 	//jumping stuff - DL
 	void Jump(float inDeltaTime);
 	void DecrementJumpTimer();
+	float getAcceleration() { return mAcceleration; }
 
 
 protected:

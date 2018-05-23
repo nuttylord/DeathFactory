@@ -23,6 +23,8 @@ protected:
 
 private:
 
+	float GetDistance(GameObjectPtr target);
+
 	void HandleShooting();
 
 	ECatControlType	mCatControlType;
