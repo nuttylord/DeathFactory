@@ -216,7 +216,10 @@ void NetworkManagerServer::SendStatePacketToClient( ClientProxyPtr inClientProxy
 	
 	AddScoreBoardStateToPacket( statePacket );
 
-	statePacket.Write( World::sInstance->getCollisionSetNum() ); // make world size check tiny.
+	// this was originally intended to be somewhere that we check for de-synced world sizes. 
+	// this however was causing some serious issues with packets and sending a sync packet was 
+	// being handled for the most part by replicationManager. 
+	//statePacket.Write( World::sInstance->getCollisionSetNum() ); // make world size check tiny.
 
 	//AddEnvironmentStateToPacket(statePacket);
 
@@ -269,10 +272,10 @@ void NetworkManagerServer::AddCollisionStateToPacket(OutputMemoryBitStream& inOu
 
 	std::vector< GameObjectPtr > collisionVector;
 
-	// get environment objects
+	// get changed objects
 	for (GameObjectPtr gameObject : gameObjects)
 	{
-		// environment is now server side. 
+		// environment is now server side & client side
 		if(/*gameObject->GetClassId() == 'ENVT' || */gameObject->GetClassId() == 'RCAT' || gameObject->GetClassId() == 'MOUS' || gameObject->GetClassId() == 'YARN')
 			if (gameObject->GetIsDirty())
 			{
@@ -282,7 +285,8 @@ void NetworkManagerServer::AddCollisionStateToPacket(OutputMemoryBitStream& inOu
 	}
 
 	// write the size of the environments into the packet
-	inOutputStream.Write(collisionVector.size());
+	uint16_t size = collisionVector.size(); // might be more than 255 objects on whole server. 
+	inOutputStream.Write(size);
 
 	// push the objects into the packet. 
 	for (GameObjectPtr gameObject : collisionVector)

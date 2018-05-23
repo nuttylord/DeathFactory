@@ -83,7 +83,7 @@ void ScoreBoardManager::IncScore( uint32_t inPlayerId, int inAmount )
 
 bool ScoreBoardManager::Write( OutputMemoryBitStream& inOutputStream ) const
 {
-	int entryCount = mEntries.size();
+	uint8_t entryCount = mEntries.size(); // wont be more than 255 players
 	
 	//we don't know our player names, so it's hard to check for remaining space in the packet...
 	//not really a concern now though
@@ -100,7 +100,7 @@ bool ScoreBoardManager::Write( OutputMemoryBitStream& inOutputStream ) const
 
 bool ScoreBoardManager::Read( InputMemoryBitStream& inInputStream )
 {
-	int entryCount;
+	uint8_t entryCount;
 	inInputStream.Read( entryCount );
 	//just replace everything that's here, it don't matter...
 	mEntries.resize( entryCount );

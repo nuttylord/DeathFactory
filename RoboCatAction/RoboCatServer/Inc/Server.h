@@ -19,6 +19,8 @@ public:
 
 	//peristance related stuffs -DL
 	void ReadHighScore();
+	void SaveHighScores();
+	void LoadHighScore();
 	void UpdateHighScore();
 	bool UpdateExistingHighScore(ScoreBoardManager::Entry inScore);
 	void WriteHighScores();

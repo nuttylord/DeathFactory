@@ -375,6 +375,7 @@
     <ClInclude Include="Inc\Enviroment.h" />
     <ClInclude Include="Inc\half.hpp" />
     <ClInclude Include="Inc\ReadyManager.h" />
+    <ClInclude Include="Inc\ReadyPlayer.h" />
     <ClInclude Include="Inc\Yarn.h" />
     <ClInclude Include="Inc\ByteSwap.h" />
     <ClInclude Include="Inc\DeliveryNotificationManager.h" />
@@ -409,6 +410,7 @@
     <ClCompile Include="Src\AckRange.cpp" />
     <ClCompile Include="Src\Enviroment.cpp" />
     <ClCompile Include="Src\ReadyManager.cpp" />
+    <ClCompile Include="Src\ReadyPlayer.cpp" />
     <ClCompile Include="Src\Yarn.cpp" />
     <ClCompile Include="Src\DeliveryNotificationManager.cpp" />
     <ClCompile Include="Src\Engine.cpp" />
