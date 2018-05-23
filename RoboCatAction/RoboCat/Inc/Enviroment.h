@@ -30,7 +30,7 @@ public:
 	//virtual sf::FloatRect	getBoundingRect() const;
 
 	virtual unsigned int	getCategory() const;
-
+	virtual void			UpdateTextures() {}
 
 	virtual uint32_t		Write(OutputMemoryBitStream& inOutputStream, uint32_t inDirtyState) const override;
 	virtual void			Read(InputMemoryBitStream& inInputStream) override;
@@ -38,8 +38,14 @@ public:
 
 	virtual bool			HandleCollisionWithPlayer(RoboCat* incat);
 
-	virtual const Type		getType()					const override	{ return mType; }
-	virtual void			setType(Type input)			override		{ mType = input; }
+	/*virtual const Type		getType()					const override	{ return mType; }
+	virtual void			setType(Type input)			override {
+		mType = input; 
+		mIsNew = true; 
+		setRectType(input);
+	}*/
+	virtual bool			getIsNew()					override		{ return mIsNew; }
+	virtual const void		setIsNew(bool in)			override		{ mIsNew = in; }
 
 protected:
 	Enviroment();
@@ -53,6 +59,7 @@ private:
 	//Animation				mConveyorBelt;
 	bool					mPlayedGasLeakSound;
 	bool					mPlayedFanBoostSound;
+	bool					mIsNew = false;
 
 };
 

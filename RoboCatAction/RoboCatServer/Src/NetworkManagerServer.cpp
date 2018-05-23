@@ -57,13 +57,21 @@ void NetworkManagerServer::ProcessPacket( ClientProxyPtr inClientProxy, InputMem
 		//need to resend welcome. to be extra safe we should check the name is the one we expect from this address,
 		//otherwise something weird is going on...
 		SendWelcomePacket( inClientProxy );
+		/*if (inClientProxy->GetDeliveryNotificationManager().ReadAndProcessState( inInputStream ))
+		{
+			SendSyncPacketToClient(inClientProxy, inInputStream);
+		}*/
 		break;
 	case kInputCC:
 		if( inClientProxy->GetDeliveryNotificationManager().ReadAndProcessState( inInputStream ) )
 		{
 			HandleInputPacket( inClientProxy, inInputStream );
+			//SendSyncPacketToClient(inClientProxy, inInputStream);
 		}
 		break;
+	/*case kSyncCC:
+		SendSyncPacketToClient( inClientProxy );
+		break;*/
 	default:
 		LOG( "Unknown packet type received from %s", inClientProxy->GetSocketAddress().ToString().c_str() );
 		break;
@@ -112,7 +120,7 @@ void NetworkManagerServer::SendWelcomePacket( ClientProxyPtr inClientProxy )
 
 	welcomePacket.Write( kWelcomeCC );
 	welcomePacket.Write( inClientProxy->GetPlayerId() );
-
+	//AddEnvironmentStateToPacket( welcomePacket );
 	LOG( "Server Welcoming, new client '%s' as player %d", inClientProxy->GetName().c_str(), inClientProxy->GetPlayerId() );
 
 	SendPacket( welcomePacket, inClientProxy->GetSocketAddress() );
@@ -157,8 +165,39 @@ void NetworkManagerServer::UpdateAllClients()
 	}
 }
 
+void NetworkManagerServer::SendSyncPacketToClient(ClientProxyPtr inClientProxy, InputMemoryBitStream& inInputStream)
+{
+	//build sync packet
+	OutputMemoryBitStream	syncPacket;
+
+	//it's sync!
+	syncPacket.Write(kSyncCC);
+
+	InFlightPacket* ifp = inClientProxy->GetDeliveryNotificationManager().WriteState(syncPacket);
+
+	AddEnvironmentStateToPacket( syncPacket );
+	//LOG("i run", 0);
+	//AddWorldStateToPacket(statePacket);
+
+	//WriteLastMoveTimestampIfDirty(statePacket, inClientProxy);
+
+	//AddCollisionStateToPacket(statePacket);
+
+	//AddScoreBoardStateToPacket(statePacket);
+
+	//AddReadyStateToPacket(statePacket);
+
+	ReplicationManagerTransmissionData* rmtd = new ReplicationManagerTransmissionData(&inClientProxy->GetReplicationManagerServer());
+	inClientProxy->GetReplicationManagerServer().Write(syncPacket, rmtd);
+	ifp->SetTransmissionData('RPLM', TransmissionDataPtr(rmtd));
+
+	SendPacket(syncPacket, inClientProxy->GetSocketAddress());
+
+}
+
 void NetworkManagerServer::SendStatePacketToClient( ClientProxyPtr inClientProxy )
 {
+	//const auto& gameObjects = World::sInstance->GetGameObjects();
 	//build state packet
 	OutputMemoryBitStream	statePacket;
 
@@ -169,14 +208,19 @@ void NetworkManagerServer::SendStatePacketToClient( ClientProxyPtr inClientProxy
 
 	//AddWorldStateToPacket(statePacket);
 
-	WriteLastMoveTimestampIfDirty( statePacket, inClientProxy );
+	WriteLastMoveTimestampIfDirty( statePacket, inClientProxy ); // timestamp it 
+
+	AddReadyStateToPacket(statePacket);
 
 	AddCollisionStateToPacket( statePacket );
 	
 	AddScoreBoardStateToPacket( statePacket );
 
-	AddReadyStateToPacket(statePacket);
+	statePacket.Write( World::sInstance->getCollisionSetNum() ); // make world size check tiny.
 
+	//AddEnvironmentStateToPacket(statePacket);
+
+	//LOG("this is the count %d", World::sInstance->getCollisionSetNum());
 	ReplicationManagerTransmissionData* rmtd = new ReplicationManagerTransmissionData( &inClientProxy->GetReplicationManagerServer() );
 	inClientProxy->GetReplicationManagerServer().Write( statePacket, rmtd );
 	ifp->SetTransmissionData( 'RPLM', TransmissionDataPtr( rmtd ) );
@@ -228,7 +272,8 @@ void NetworkManagerServer::AddCollisionStateToPacket(OutputMemoryBitStream& inOu
 	// get environment objects
 	for (GameObjectPtr gameObject : gameObjects)
 	{
-		if(gameObject->GetClassId() == 'ENVT' || gameObject->GetClassId() == 'RCAT' || gameObject->GetClassId() == 'MOUS' || gameObject->GetClassId() == 'YARN')
+		// environment is now server side. 
+		if(/*gameObject->GetClassId() == 'ENVT' || */gameObject->GetClassId() == 'RCAT' || gameObject->GetClassId() == 'MOUS' || gameObject->GetClassId() == 'YARN')
 			if (gameObject->GetIsDirty())
 			{
 				collisionVector.push_back(gameObject);
@@ -243,6 +288,7 @@ void NetworkManagerServer::AddCollisionStateToPacket(OutputMemoryBitStream& inOu
 	for (GameObjectPtr gameObject : collisionVector)
 	{
 		inOutputStream.Write(gameObject->GetNetworkId());
+		
 		inOutputStream.Write(gameObject->GetClassId());
 		gameObject->Write(inOutputStream, 0xffffffff);
 	}
@@ -256,15 +302,19 @@ void NetworkManagerServer::AddEnvironmentStateToPacket(OutputMemoryBitStream& in
 
 	// get environment objects
 	for (GameObjectPtr gameObject : gameObjects)
+	{
 		if (gameObject->GetClassId() == 'ENVT')
+		{
 			environmentVector.push_back(gameObject);
-	
+		}
+	}
 	// write the size of the environments into the packet
 	inOutputStream.Write(environmentVector.size());
 
 	// push the objects into the packet. 
 	for (GameObjectPtr gameObject : environmentVector)
 	{
+		//LOG("", gameObject->);
 		inOutputStream.Write(gameObject->GetNetworkId());
 		inOutputStream.Write(gameObject->GetClassId());
 		gameObject->Write(inOutputStream, 0xffffffff);

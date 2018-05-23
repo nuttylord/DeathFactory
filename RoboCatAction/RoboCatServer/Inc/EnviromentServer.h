@@ -9,7 +9,7 @@ public:
 	void HandleDying() override;
 
 
-	bool HandleCollisionsWithCat(RoboCat* inCat);
+	//bool HandleCollisionsWithCat(RoboCat* inCat);
 
 	uint32_t GetClassId() { return 'ENVT'; }
 protected:

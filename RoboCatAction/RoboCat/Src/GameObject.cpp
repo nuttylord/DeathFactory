@@ -1,4 +1,5 @@
 #include<RoboCatPCH.h>
+//#include "..\Inc\GameObject.h"
 
 GameObject::GameObject() :
 	mIndexInWorld( -1 ),
@@ -9,6 +10,28 @@ GameObject::GameObject() :
 	mColor( Colors::White ),
 	mScale( 1.0f )
 {
+	setType(GameObject::Type::GameObj);
+}
+
+void GameObject::setType(GameObject::Type input)
+{
+	// preset values for collision on server with these types of objects. 
+	mType = input;
+	if (input == GameObject::Type::ShortPlatform)
+	{
+		SetWidth(.25f);
+		SetHeight(.05f);
+	}
+	else if (input == GameObject::Type::LongPlatform)
+	{
+		SetWidth(1.25f);
+		SetHeight(.05f);
+	}
+	else if (input == GameObject::Type::PlayerCharacter)
+	{
+		SetWidth(.13f);
+		SetHeight(.25f);
+	}
 }
 
 void GameObject::Update()
@@ -29,9 +52,59 @@ void GameObject::SetNetworkId( int inNetworkId )
 	mNetworkId = inNetworkId; 
 
 }
+//
+//SDL_Rect& GameObject::getRect()
+//{
+//	GameObject::Type type = getType();
+//	Vector3 loc = GetLocation();
+//	SDL_Rect mRect;
+//	
+//	if (type == GameObject::Type::ShortPlatform)
+//	{
+//		mRect.x = loc.mX - GetWidth() / 2;
+//		mRect.y = loc.mY - GetHeight() / 2;
+//		mRect.w = GetWidth();
+//		mRect.h = GetHeight();
+//	}
+//	else if (type == GameObject::Type::LongPlatform)
+//	{
+//		mRect.x = loc.mX - GetWidth() / 2;
+//		mRect.y = loc.mY - GetHeight() / 2;
+//		mRect.w = GetWidth();
+//		mRect.h = GetHeight();
+//	}
+//	else if (type == GameObject::Type::SpinningSaw) {
+//		mRect.x = loc.mX - GetWidth() / 2;
+//		mRect.y = loc.mY - GetHeight() / 2;
+//		mRect.w = GetWidth();
+//		mRect.h = GetHeight();
+//	}
+//
+//	return mRect;
+//}
 
 void GameObject::SetRotation( float inRotation )
 { 
 	//should we normalize using fmodf?
 	mRotation = inRotation;
 }
+//
+//void setType(GameObject::Type input)
+//{
+//	mType = input;
+//	if (input == GameObject::Type::ShortPlatform)
+//	{
+//		SetWidth(.25f);
+//		SetHeight(.1f);
+//	}
+//	else if (input == GameObject::Type::LongPlatform)
+//	{
+//		SetWidth(1.25f);
+//		SetHeight(.1f);
+//	}
+//	else if (input == GameObject::Type::PlayerCharacter)
+//	{
+//		SetWidth(.15f);
+//		SetHeight(.25f);
+//	}
+//}

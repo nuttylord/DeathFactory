@@ -35,6 +35,13 @@
 #include "unordered_set"
 #include "cassert"
 
+//#define HALF_ROUND_STYLE	1
+////#define HALF_ENABLE_CPP11_USER_LITERALS 1
+//#include <half.hpp>
+//
+//using half_float::half;
+//using half_float::half_cast;
+//using half_float::literal;
 using std::shared_ptr;
 using std::unique_ptr;
 using std::vector;

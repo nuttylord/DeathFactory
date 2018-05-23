@@ -6,7 +6,7 @@ RoboCatClient::RoboCatClient() :
 	mTimeLocationBecameOutOfSync( 0.f ),
 	mTimeVelocityBecameOutOfSync( 0.f )
 {
-
+	SetRotation(90.f);
 	//get sprite component
 	mSpriteComponent.reset( new SpriteComponent( this ) );
 	mSpriteComponent->SetTexture( TextureManager::sInstance->GetTexture( "walking_right" ) );
@@ -26,7 +26,7 @@ void RoboCatClient::HandleDying()
 
 void RoboCatClient::Update()
 {
-
+	
 	//is this the cat owned by us?
 	if( GetPlayerId() == NetworkManagerClient::sInstance->GetPlayerId() )
 	{
@@ -46,6 +46,11 @@ void RoboCatClient::Update()
 			
 			//LOG( "Client Move Time: %3.4f deltaTime: %3.4f left rot at %3.4f", latestMove.GetTimestamp(), deltaTime, GetRotation() );
 		}
+		//update sprite
+		if (GetRotation() < 3.14159)
+			mSpriteComponent->SetTexture(TextureManager::sInstance->GetTexture("walking_right"));
+		else
+			mSpriteComponent->SetTexture(TextureManager::sInstance->GetTexture("walking_left"));
 	}
 	else
 	{
@@ -58,14 +63,7 @@ void RoboCatClient::Update()
 		}
 	}
 
-
-
-
-	//update sprite
-	if(GetRotation() < 3.14159)
-		mSpriteComponent->SetTexture(TextureManager::sInstance->GetTexture("walking_right"));
-	else
-		mSpriteComponent->SetTexture(TextureManager::sInstance->GetTexture("walking_left"));
+	
 }
 
 void RoboCatClient::Read( InputMemoryBitStream& inInputStream )

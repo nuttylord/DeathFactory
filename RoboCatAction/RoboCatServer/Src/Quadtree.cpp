@@ -195,10 +195,10 @@ bool Quadtree::contains(SDL_Rect quad, GameObjectPtr node) {
 	{
 		SDL_Rect nodeRect;
 
-		nodeRect.x = (Sint16)(node->GetLocation().mX - node->GetCollisionRadius() / 2);
-		nodeRect.y = (Sint16)(node->GetLocation().mY - node->GetCollisionRadius() / 2);
-		nodeRect.w = (Sint16)(node->GetCollisionRadius() * 10);
-		nodeRect.h = (Sint16)(node->GetCollisionRadius() * 10);
+		nodeRect.x = (node->GetLocation().mX - node->GetCollisionRadius() / 2);
+		nodeRect.y = (node->GetLocation().mY - node->GetCollisionRadius() / 2);
+		nodeRect.w = (node->GetCollisionRadius() * 5);
+		nodeRect.h = (node->GetCollisionRadius() * 5);
 		// TL - this is SDL's very own boolean type. 
 		// It is so obnoxious that it needs to have its own memory allocation and cant just return true like an 
 		// obedient little library!!! 

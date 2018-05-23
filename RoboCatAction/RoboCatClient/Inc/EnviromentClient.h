@@ -8,7 +8,7 @@ public:
 	//virtual void Read(InputMemoryBitStream& inInputStream) override;
 
 
-	enum Type
+	/*enum Type
 	{
 		MovingPlatform,
 		SpinningSaw,
@@ -18,12 +18,25 @@ public:
 		LongPlatform,
 		ShortPlatform,
 		TypeCount
-	};
+	};*/
 
-	Type mType;
+	virtual void	UpdateTextures() override;
+	virtual void	Update() override;
 
+	void					setTextureSet(bool set)	{ textureSet = set; }
+	bool					getTextureSet() { return textureSet; }
+
+	/*virtual const Type		getType()					const override { return mType; }
+	virtual void			setType(Type input)			override { mType = input; mIsNew = true; }*/
+
+	virtual bool			getIsNew()					override { return mIsNew; }
+	virtual const void		setIsNew(bool in)			override { mIsNew = in; }
 protected:
 	EnviromentClient();
 private:
+	bool textureSet = false;
+	bool firstRun = false;
+	Type mType;
 	SpriteComponentPtr mSpriteComponent;
+	bool					mIsNew = false;
 };

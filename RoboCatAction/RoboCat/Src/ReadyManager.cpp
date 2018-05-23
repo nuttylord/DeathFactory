@@ -10,11 +10,27 @@ void ReadyManager::StaticInit()
 
 ReadyManager::ReadyManager() :
 	mEveryoneReady(false),
-	mPlaying(false),
+	mGamePlaying(false),
 	mGameFinished(false)
 {
 
 }
+
+ReadyManager::ReadyPlayer::ReadyPlayer(uint32_t inPlayerId, const string& inPlayerName, bool ready) :
+	mPlayerId(inPlayerId),
+	mPlayerName(inPlayerName)
+{
+	//set to false when we first make the player
+	SetReadyState(ready);
+}
+
+//changes ready state and will update a displayed message to be added later on
+void ReadyManager::ReadyPlayer::SetReadyState(bool inReadyState)
+{
+	mReadyState = inReadyState;
+
+}
+
 
 
 ReadyManager::ReadyPlayer::ReadyPlayer(uint32_t PlayerId, const string& PlayerName, bool ready) :
@@ -66,6 +82,9 @@ bool ReadyManager::RemoveEntry(uint32_t inPlayerId)
 	return false;
 }
 
+void ReadyManager::AddEntry(uint32_t inPlayerId, const string& inPlayerName)
+{
+	//if this player id exists already, remove it first- it would be crazy to have two of the same id
 //Add player to the manager
 void ReadyManager::AddEntry(uint32_t inPlayerId, const string& inPlayerName)
 {
@@ -77,12 +96,14 @@ void ReadyManager::AddEntry(uint32_t inPlayerId, const string& inPlayerName)
 	CheckPlayerCount();
 }
 
+
 //change a players ready state
 void ReadyManager::ChangeReadyState(uint32_t inPlayerId, bool inReady)
 {
 	ReadyPlayer* entry = GetEntry(inPlayerId);
 	if (entry)
 	{
+		entry->SetReadyState(inReady);
 		entry->SetReady(inReady);
 	}
 }
@@ -90,7 +111,16 @@ void ReadyManager::ChangeReadyState(uint32_t inPlayerId, bool inReady)
 //checks if the game is ready to start, if so sets everyone ready
 void ReadyManager::CheckPlayerCount()
 {
-	if (!mPlaying)
+	if (mGamePlaying)
+	{
+		for (ReadyPlayer& entry : mEntries)
+		{
+			//what to do if the game is running ?
+			
+
+		}
+	}
+	else //game is not running (not enough ready players yet)
 	{
 		int readyPlayers = 0;
 
@@ -126,16 +156,15 @@ void ReadyManager::CheckPlayerCount()
 				entry.SetDisplayMessage(display);
 			}
 		} //when everyone ready
-	}
 
+	}
 }
 
-//returns false if finds a player that is not ready 
 bool ReadyManager::AllReady() {
 
 	//loop through every player, if we find one not ready return false
 	for (ReadyPlayer player : mEntries) {
-		if (!player.GetReady())
+		if (!player.GetReadyState())
 			return false;
 	}
 
@@ -156,6 +185,7 @@ bool ReadyManager::Write(OutputMemoryBitStream& inOutputStream) const
 		entry.Write(inOutputStream);
 	}
 
+	inOutputStream.Write(mGamePlaying);
 	inOutputStream.Write(mPlaying);
 
 	return true;
@@ -165,14 +195,16 @@ bool ReadyManager::Read(InputMemoryBitStream& inInputStream)
 {
 	int entryCount;
 	inInputStream.Read(entryCount);
-	
-
+	//just replace everything that's here, it don't matter...
 	mEntries.resize(entryCount);
 	for (ReadyPlayer& entry : mEntries)
 	{
 		entry.Read(inInputStream);
 	}
 
+	bool gamePlaying;
+	inInputStream.Read(gamePlaying);
+	SetGamePlaying(gamePlaying);
 	bool Playing;
 	inInputStream.Read(Playing);
 
@@ -187,6 +219,9 @@ void ReadyManager::SetEveryoneReady(bool inEveryoneReady)
 	mEveryoneReady = inEveryoneReady;
 }
 
+void ReadyManager::SetGamePlaying(bool gamePlaying)
+{
+	mGamePlaying = gamePlaying;
 //called when the game starts, allows players to move once set
 void ReadyManager::SetPlaying(bool Playing)
 {
@@ -197,6 +232,7 @@ void ReadyManager::SetPlaying(bool Playing)
 void ReadyManager::StartGame()
 {
 	//read scores from file
+	mGamePlaying = true;
 	mPlaying = true;
 	CheckPlayerCount();
 }
@@ -208,6 +244,7 @@ bool ReadyManager::ReadyPlayer::Write(OutputMemoryBitStream& inOutputStream) con
 
 	inOutputStream.Write(mPlayerId);
 	inOutputStream.Write(mPlayerName);
+	inOutputStream.Write(mReadyState);
 	inOutputStream.Write(mReady);
 	inOutputStream.Write(mDisplayMessage);
 
@@ -224,6 +261,7 @@ bool ReadyManager::ReadyPlayer::Read(InputMemoryBitStream& inInputStream)
 	inInputStream.Read(readyState);
 
 	if (didSucceed) {
+		SetReadyState(readyState);
 		SetReady(readyState);
 	}
 

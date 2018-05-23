@@ -6,7 +6,7 @@ const float HALF_WORLD_WIDTH = 6.4f;
 
 RoboCat::RoboCat() :
 	GameObject(),
-	mMaxRotationSpeed( 3.f ), 
+	mMaxRotationSpeed( 3.f ), // changed from 5
 	mMaxLinearSpeed( 50.f ),
 	mVelocity( Vector3::Zero ),
 	mWallRestitution( 0.1f ),
@@ -15,6 +15,9 @@ RoboCat::RoboCat() :
 	mPlayerId( 0 ),
 	mIsShooting( false ),
 	mHealth( 10 ),
+	mFriction(30), //new - higher value means lower friction
+	mGravity(3.f),
+	mJumpStrength(10.f)
 	mAcceleration(8), //player applies acceleration to velocity - DL
 	mFriction(40), //higher value means lower friction
 	mGravity(7.f), // constant force applied downlwards
@@ -22,11 +25,18 @@ RoboCat::RoboCat() :
 	mJumpTimer(450.f) // time between jumps
 {
 	SetCollisionRadius( .25f );
+	setType(GameObject::Type::PlayerCharacter);
 }
 
 // Process input...  - DL
 void RoboCat::ProcessInput( float inDeltaTime, const InputState& inInputState )
 {
+	//process our input....
+	if (ReadyManager::sInstance->IsGamePlaying()) {
+		//turning...
+		float newRotation = GetRotation() + inInputState.GetDesiredHorizontalDelta() * mMaxRotationSpeed * inDeltaTime;
+		//SetRotation( newRotation );
+
 	//Wait for ReadyManager 
 	if (ReadyManager::sInstance->IsGamePlaying()) {
 
@@ -52,6 +62,9 @@ void RoboCat::ProcessInput( float inDeltaTime, const InputState& inInputState )
 
 		}
 
+		if (inInputState.GetDesiredVerticalDelta() > 0)
+		{
+			mVelocity += Vector3(0, -mJumpStrength * inDeltaTime, 0);
 		//if Vertical delta is > 1 then we want to jump.
 		if (inInputState.GetDesiredVerticalDelta() > 0)
 		{
@@ -111,20 +124,22 @@ void RoboCat::AdjustVelocityByThrust( float inDeltaTime )
 void RoboCat::SimulateMovement( float inDeltaTime )
 {
 	if (ReadyManager::sInstance->IsGamePlaying()) {
-
 		//simulate us...
+		
 		AdjustVelocityByThrust(inDeltaTime);
 
 
 		SetLocation(GetLocation() + mVelocity * inDeltaTime);
 
 		ProcessCollisions();
-
 	}
 }
 
 void RoboCat::Update()
 {
+	//if (!ReadyManager::sInstance->IsGamePlaying())
+		//SetLocation(Vector3(0, 0, 0));
+
 	DecrementJumpTimer();
 }
 
@@ -144,7 +159,7 @@ void RoboCat::ProcessCollisions()
 	//it would be preferable to use a quad tree or some other structure to minimize the
 	//number of collisions that need to be tested.
 	
-	// TL - Realised quickly that this needs to be in world.cpp
+	// TL - Realised quickly that this needs to be in server.cpp
 	//for (auto goIt = World::sInstance->GetGameObjects().begin(), end = World::sInstance->GetGameObjects().end(); goIt != end; ++goIt)
 	//{
 	//	GameObject* target = goIt->get();
