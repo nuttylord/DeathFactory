@@ -49,7 +49,7 @@ public:
 		if (input == GameObject::Type::ShortPlatform)
 		{
 			SetWidth(.25f);
-			SetHeight(.1f);
+			SetHeight(.07f);
 		}
 		else if (input == GameObject::Type::LongPlatform)
 		{
@@ -58,8 +58,8 @@ public:
 		}
 		else if (input == GameObject::Type::PlayerCharacter)
 		{
-			SetWidth(.15f);
-			SetHeight(.25f);
+			SetWidth(.09f);
+			SetHeight(.14f);
 		}
 	}
 	virtual void			UpdateTextures() {} // this is inherited and called on environment pointers
@@ -120,8 +120,8 @@ public:
 
 	
 
-	virtual const float			GetWidth()								const	{ return mWidth; }
-	virtual const float			GetHeight()								const	{ return mHeight; }
+	virtual float			GetWidth()								;
+	virtual float			GetHeight()								;
 	virtual void				SetWidth(float width)							{ mWidth = width; }
 	virtual void				SetHeight(float height)							{ mHeight = height; }
 	virtual const uint8_t		GetHealth()								const	{ return 0; }

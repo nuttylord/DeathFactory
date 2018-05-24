@@ -415,28 +415,30 @@ void Server::DoObjectCollision()
 						// doing your rect. it is important to note that these values are for 
 						// collision checking and are not valid to the world. The reason i have 
 						// * 1000 each of them is because of the integer structure of the Rect's.
-						objRect.x = (loc.mX - obj->GetWidth() / 2) * 1000; 
-						objRect.y = (loc.mY - obj->GetHeight() / 2) * 1000;
-						objRect.w = obj->GetWidth() * 1000; 
-						objRect.h = obj->GetHeight() * 1000;
+						objRect.x = (loc.mX - obj->GetWidth() / 2) * 10000; 
+						objRect.y = (loc.mY - obj->GetHeight() / 2) * 10000;
+						objRect.w = obj->GetWidth() * 10000; 
+						objRect.h = obj->GetHeight() * 10000;
 						
-						loc = target->GetLocation();
-
+						
+						//x_overlap = Math.max(0, Math.min(rect1.right, rect2.right) - Math.max(rect1.left, rect2.left));
+						//y_overlap = Math.max(0, Math.min(rect1.bottom, rect2.bottom) - Math.max(rect1.top, rect2.top));
 						//doing the target's rect.
 						if (type == GameObject::Type::ShortPlatform)
 						{
-							targetRect.x = (loc.mX - obj->GetWidth() / 2) * 1000;
-							targetRect.y = (loc.mY - obj->GetHeight() / 2) * 1000;
-							targetRect.w = obj->GetWidth() * 1000;
-							targetRect.h = obj->GetHeight() * 1000;
+							targetRect.x = (targetLocation.mX - target->GetWidth() / 2) * 10000;
+							targetRect.y = (targetLocation.mY - target->GetHeight() / 2) * 10000;
+							targetRect.w = target->GetWidth() * 10000;
+							targetRect.h = target->GetHeight() * 10000;
 						}
 						else if (type == GameObject::Type::LongPlatform)
 						{
-							targetRect.x = (loc.mX - obj->GetWidth() / 2) * 1000;
-							targetRect.y = (loc.mY - obj->GetHeight() / 2) * 1000;
-							targetRect.w = obj->GetWidth() * 1000;
-							targetRect.h = obj->GetHeight() * 1000;
+							targetRect.x = (targetLocation.mX - target->GetWidth() / 2) * 10000;
+							targetRect.y = (targetLocation.mY - target->GetHeight() / 2) * 10000;
+							targetRect.w = target->GetWidth() * 10000;
+							targetRect.h = target->GetHeight() * 10000;
 						}
+
 						if (target->HandleCollisionWithPlayer(obj))
 						{
 							// complicated collision part. 
@@ -458,8 +460,8 @@ void Server::DoObjectCollision()
 								if (type == GameObject::Type::SpinningSaw)
 								{
 									obj->SetHealth(obj->GetHealth() - 1);
-									relVel.mX * -1.1f;
-									relVel.mY * -1.1f;
+									relVel.mX * -1.3f;
+									relVel.mY * -1.3f;
 									obj->SetVelocity(relVel);
 								}
 
@@ -496,48 +498,59 @@ void Server::DoObjectCollision()
 
 								if (SDL_bool::SDL_TRUE == SDL_HasIntersection(&targetRect, &objRect) && (type == GameObject::Type::ShortPlatform || type == GameObject::Type::LongPlatform))
 								{
-									Vector3 loc = obj->GetLocation();
-									Vector3 tarLoc = target->GetLocation();
-
-									//important note- we only move this cat. the other cat can take care of moving itself
-									//obj->SetLocation(targetLocation - acceptableDeltaFromSourceToTarget);
-
+									// collision detection % response for rectangles. 
 									Vector3 velocity = obj->GetVelocity();
-									// player is to side of the platform
-									if (objRect.y > targetRect.y && objRect.y + objRect.h < targetRect.y)
-									{
-										Vector3 move = loc - tarLoc;
-										move.Normalize2D();
-										move *= (obj->GetWidth() / 2.f + target->GetWidth() / 2.f);
-										obj->SetLocation(move);
+									// player is to side of the platform. 
+									if (objRect.y < targetRect.y && objRect.y + objRect.h > targetRect.y
+										&& objRect.x < targetRect.x && objRect.x + objRect.w > targetRect.x)
+									{ // player hit left side
+										LOG("i hit left side", 0);
+										// nudge the player back 
+										loc.mX -= target->GetWidth() / 2;// slightly more so they are never stuck
+										velocity.mX *= -.5f;
+										obj->SetLocation(loc);
+										obj->SetVelocity(velocity);
 									}
-									else if (objRect.y > targetRect.y)
-									{ // if you bump your head on the top, nullify your upwards velocity.
-										if (objRect.x > targetRect.x
-											&& objRect.x < targetRect.x + targetRect.w
-											|| objRect.x + objRect.w > targetRect.x
-											&& objRect.x + objRect.w < targetRect.x + targetRect.w)
-										{
-											Vector3 move = Vector3(0, 1, 0);//loc - tarLoc;
-																			//move.Normalize2D();
-											move *= (obj->GetHeight() / 2.f + target->GetHeight() / 2.f);
-											obj->SetLocation(move);
+									else if (objRect.y < targetRect.y && objRect.y + objRect.h > targetRect.y
+										&& objRect.x + objRect.w > targetRect.x + targetRect.w && objRect.x < targetRect.x + targetRect.w)
+									{// player hit right side
+										LOG("i hit right side", 0);
+										// nudge the player back
+										loc.mX += target->GetWidth() / 2;// slightly more so they are never stuck
+										velocity.mX *= -.5f;
+										obj->SetLocation(loc);
+										obj->SetVelocity(velocity);
+									}
+									
+									if (objRect.y + objRect.h / 2 > targetRect.y)
+									{ // if you bump your head on the top, nullify your upwards velocity. 1/3 of player width as ability to hang off edge.
+										if (objRect.x + objRect.w > targetRect.x 
+											&& objRect.x < targetRect.x + targetRect.w)
+										{ 
+											LOG("i hit bottom", 0);
+											// nudge back
+											loc.mY += target->GetHeight() / 2;
+											velocity.mX *= -.5f;
+											obj->SetLocation(loc);
+											obj->SetVelocity(velocity);
 										}
 									}
-									else if (objRect.y + objRect.h < targetRect.y)
+									else if (objRect.y + objRect.h/2 < targetRect.y)
 									{ // bottom of player is above the centrepoint of platform and colliding. 
-										if (objRect.x / 2.f > targetRect.x
+										if (objRect.x + objRect.w > targetRect.x
+											&& objRect.x < targetRect.x + targetRect.w - objRect.w
+											/*objRect.x > targetRect.x
 											&& objRect.x / 2.f < targetRect.x + targetRect.w
 											|| objRect.x + objRect.w > targetRect.x
-											&& objRect.x + objRect.w < targetRect.x + targetRect.w)
+											&& objRect.x + objRect.w < targetRect.x + targetRect.w*/)
 										{
-											Vector3 move = Vector3(0, -1, 0);//loc - tarLoc;
-																			 //move.Normalize2D();
-											move *= (obj->GetHeight() / 2.f + target->GetHeight() / 2.f);
-											obj->SetLocation(move);
-
-											//player.setIsOnGround(true);
-											//player.setFallSpeed(0.f);
+											LOG("i hit floor", 0);
+											// nudge back
+											//velocity.mX = velocity.mX * 1.1;
+											velocity.mY = velocity.mY * 1.1f;
+											loc.mY -= target->GetHeight() / 2;
+											obj->SetLocation(loc);
+											obj->SetVelocity(velocity);
 										}
 									}
 								}

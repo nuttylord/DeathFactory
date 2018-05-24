@@ -45,7 +45,7 @@ uint32_t Enviroment::Write(OutputMemoryBitStream & inOutputStream, uint32_t inDi
 		inOutputStream.Write((bool)true);
 
 
-		inOutputStream.Write(mType);
+		inOutputStream.Write(getType());
 
 		writtenState |= EERS_Type;
 	}

@@ -52,6 +52,38 @@ void GameObject::SetNetworkId( int inNetworkId )
 	mNetworkId = inNetworkId; 
 
 }
+
+float GameObject::GetWidth() 
+{
+	if (getType() == GameObject::Type::ShortPlatform)
+	{
+		return .25f;
+	}
+	else if (getType() == GameObject::Type::LongPlatform)
+	{
+		return 1.25f;
+	}
+	else if (getType() == GameObject::Type::PlayerCharacter)
+	{
+		return .13f;
+	}
+}
+
+float GameObject::GetHeight() 
+{
+	if (getType() == GameObject::Type::ShortPlatform)
+	{
+		return .05f;
+	}
+	else if (getType() == GameObject::Type::LongPlatform)
+	{
+		return .05f;
+	}
+	else if (getType() == GameObject::Type::PlayerCharacter)
+	{
+		return .25f;
+	}
+}
 //
 //SDL_Rect& GameObject::getRect()
 //{

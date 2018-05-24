@@ -3,7 +3,13 @@
 class Server : public Engine
 {
 public:
-
+	/*struct floatRect {
+		left: x1,
+		right: x1 + x2,
+		top: y1,
+		bottom: y1 + y2,
+	};*/
+	
 	static bool StaticInit();
 
 	virtual void DoFrame() override;
