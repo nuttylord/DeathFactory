@@ -222,7 +222,10 @@ uint32_t RoboCat::Write( OutputMemoryBitStream& inOutputStream, uint32_t inDirty
 		Vector3 location = GetLocation();
 		inOutputStream.Write( location.mX );
 		inOutputStream.Write( location.mY );
-
+		// 2 x uint16_t, 1 bool/byte  0b00001011
+		// 32 x 5
+		// 32 + 8 
+		// 160 -> 40. 
 		inOutputStream.Write( GetRotation() );
 
 		writtenState |= ECRS_Pose;
